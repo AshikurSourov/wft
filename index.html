@@ -1,0 +1,3106 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7c3aed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="স্বপ্ন সারথি">
+<title>স্বপ্ন সারথি যুব সংঘ - ফুটবল টুর্নামেন্ট</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c1:#7c3aed;--c2:#a855f7;--c3:#f59e0b;
+  --bg:#f0e8ff;--surf:rgba(255,255,255,0.65);--surf2:rgba(255,255,255,0.45);
+  --border:rgba(168,85,247,.18);--text:#2d1b4e;--muted:#6b21a8;
+}
+body{
+  font-family:'Baloo Da 2',sans-serif;
+  color:var(--text);
+  min-height:100vh;F
+  background:linear-gradient(135deg,#f5f0ff 0%,#ede8ff 30%,#f8f0ff 60%,#f0e8ff 100%);
+  background-attachment:fixed;
+  position:relative;
+}
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 20%,rgba(196,151,255,0.28) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 55% at 85% 10%,rgba(216,180,255,0.22) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 50% at 50% 85%,rgba(255,255,255,0.55) 0%,transparent 65%),
+    radial-gradient(ellipse 45% 40% at 80% 70%,rgba(200,180,255,0.2) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+body>*{position:relative;z-index:1}
+.hdr{
+  background:linear-gradient(135deg,rgba(124,58,237,0.9) 0%,rgba(168,85,247,0.85) 50%,rgba(124,58,237,0.9) 100%);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:18px 16px 14px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,0.3);
+  box-shadow:0 8px 32px rgba(124,58,237,0.25);
+  position:relative;overflow:hidden;
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(255,255,255,0.2) 0%,transparent 70%);pointer-events:none}
+.hdr::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 28px,rgba(255,255,255,.025) 28px,rgba(255,255,255,.025) 29px);pointer-events:none}
+.hdr-ball{font-size:46px;line-height:1;margin-bottom:4px}
+.hdr h1{font-size:1.35rem;font-weight:800;color:#fff;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,0.15)}
+.hdr .sub{font-size:.82rem;color:rgba(255,255,255,.85);margin-top:2px}
+.hdr .pill{display:inline-block;background:rgba(255,255,255,0.22);backdrop-filter:blur(10px);color:#fff;font-weight:700;font-size:.7rem;padding:3px 14px;border-radius:20px;margin-top:7px;border:1px solid rgba(255,255,255,0.3)}
+.fb-status{font-size:.72rem;padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;margin-top:6px}
+.fb-ok{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.fb-err{background:rgba(239,68,68,.2);color:#fecaca;border:1px solid rgba(239,68,68,.3)}
+.fb-wait{background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.25)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.nav{
+  display:flex;
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(168,85,247,.18);
+  box-shadow:0 2px 16px rgba(124,58,237,0.08);
+  position:sticky;top:0;z-index:50;
+}
+.ntab{flex:1;padding:13px 8px;border:none;background:transparent;font-family:'Baloo Da 2',sans-serif;font-size:.88rem;font-weight:600;color:rgba(109,40,217,0.5);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+.ntab.on{color:#7c3aed;border-bottom-color:#7c3aed}
+.pg{display:none}.pg.on{display:block}
+.wrap{max-width:480px;margin:0 auto;padding:16px}
+.sec{
+  background:rgba(255,255,255,0.62);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-radius:18px;padding:18px;margin-bottom:14px;
+  border:1px solid rgba(255,255,255,0.75);
+  box-shadow:0 4px 24px rgba(124,58,237,0.08),0 1px 4px rgba(0,0,0,0.04);
+}
+.sec-ttl{font-size:.78rem;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid rgba(124,58,237,0.12)}
+/* THEME PICKER */
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.theme-swatch{width:100%;aspect-ratio:1;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative}
+.theme-swatch.on{border-color:#fff;transform:scale(1.08)}
+.theme-swatch:hover{transform:scale(1.05)}
+.cpick-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.cpick-item{background:rgba(255,255,255,0.5);border:1px solid rgba(124,58,237,.15);border-radius:9px;padding:9px;text-align:center}
+.cpick-item label{font-size:.7rem;color:#6b21a8;display:block;margin-bottom:5px}
+.cpick-item input[type=color]{width:100%;height:32px;border:none;background:none;cursor:pointer;border-radius:6px;padding:0}
+.preset-label{font-size:.72rem;color:#c4b5fd;margin-bottom:6px}
+.fld{margin-bottom:12px}
+.lbl{display:block;font-size:.8rem;font-weight:600;color:#6b21a8;margin-bottom:5px}
+.req{color:#ef4444;margin-left:2px}
+.inp,.sel{width:100%;background:rgba(255,255,255,0.7);border:1.5px solid rgba(124,58,237,.2);border-radius:10px;padding:11px 14px;color:#2d1b4e;font-family:'Baloo Da 2',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s;-webkit-appearance:none;backdrop-filter:blur(8px)}
+.inp:focus,.sel:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.inp.er,.sel.er{border-color:#ef4444}
+.sel option{background:#f5f0ff;color:#2d1b4e}
+.etxt{font-size:.76rem;color:#ef4444;margin-top:4px;display:none}
+.etxt.sh{display:block}
+.pbox{width:100%;height:165px;border:2px dashed rgba(124,58,237,.3);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.5);position:relative;overflow:hidden;transition:all .2s;backdrop-filter:blur(8px)}
+.pbox:hover{border-color:#7c3aed;background:rgba(255,255,255,0.65)}
+.pbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pbox .chg{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);color:#fff;font-size:.72rem;padding:6px;text-align:center}
+.phi{font-size:34px;margin-bottom:5px}
+.pht{font-size:.8rem;color:rgba(107,33,168,.6);text-align:center;line-height:1.5}
+#fi{display:none}
+.ckwrap{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,0.5);border:1.5px solid rgba(124,58,237,.15);border-radius:10px;padding:12px;cursor:pointer;backdrop-filter:blur(8px)}
+.ckwrap input[type=checkbox]{width:18px;height:18px;min-width:18px;accent-color:#7c3aed;margin-top:2px}
+.ckwrap span{font-size:.83rem;line-height:1.5;color:#2d1b4e}
+.btn-main{width:100%;padding:15px;background:linear-gradient(135deg,#6d28d9,#9333ea);border:none;border-radius:12px;color:#fff;font-family:'Baloo Da 2',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,.3);transition:all .2s;margin-top:4px}
+.btn-main:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(124,58,237,.4)}
+.btn-main:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-gold{flex:1;padding:13px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:12px;font-family:'Baloo Da 2',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(245,158,11,.3)}
+.btn-gold:hover{background:linear-gradient(135deg,#d97706,#b45309)}
+.btn-out{flex:1;padding:13px;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:#7c3aed;border:1.5px solid rgba(124,58,237,.25);border-radius:12px;font-family:'Baloo Da 2',sans-serif;font-size:.9rem;cursor:pointer}
+.btn-out:hover{background:rgba(255,255,255,0.8)}
+.prog-wrap{margin-top:12px;display:none}
+.prog-bar{height:7px;background:rgba(124,58,237,.12);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#c4b5fd);border-radius:4px;width:0%;transition:width .4s}
+.prog-txt{font-size:.75rem;color:#6b21a8;margin-top:5px;text-align:center}
+.suc-top{text-align:center;padding:20px 16px 10px}
+.suc-top .big{font-size:52px}
+.suc-top h2{font-family:'Baloo Da 2',sans-serif;font-size:1.2rem;color:#6d28d9;margin-top:8px}
+.suc-top p{font-size:.83rem;color:#7c3aed;margin-top:4px}
+.card-preview{margin:0 16px 12px}
+.card-preview canvas{width:100%;border-radius:16px;border:2px solid #fbbf24;display:block;box-shadow:0 8px 32px rgba(251,191,36,.25)}
+.act-row{display:flex;gap:10px;padding:0 16px 20px}
+.a-login{max-width:360px;margin:30px auto 0;padding:0 16px;text-align:center}
+.a-lock{font-size:54px;margin-bottom:10px}
+.a-login h2{font-size:1.05rem;color:#7c3aed;margin-bottom:18px}
+.a-panel{display:none}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.75);border-radius:12px;padding:14px 8px;text-align:center;box-shadow:0 2px 12px rgba(124,58,237,0.07)}
+.stat-n{font-size:1.6rem;font-weight:800;color:#7c3aed}
+.stat-l{font-size:.7rem;color:#6b21a8;margin-top:2px}
+.tb-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tb-btn{flex:1;min-width:80px;padding:9px;border:1.5px solid rgba(124,58,237,.25);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:#2d1b4e;border-radius:9px;font-family:'Baloo Da 2',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s}
+.tb-btn:hover{border-color:#7c3aed;background:rgba(255,255,255,0.85)}
+.srch-w{position:relative;margin-bottom:12px}
+.srch-w input{width:100%;background:rgba(255,255,255,0.65);backdrop-filter:blur(10px);border:1.5px solid rgba(124,58,237,.2);border-radius:10px;padding:10px 14px 10px 38px;color:#2d1b4e;font-family:'Baloo Da 2',sans-serif;font-size:.88rem;outline:none}
+.srch-w input:focus{border-color:#7c3aed}
+.srch-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#6b21a8;pointer-events:none}
+.sec-lbl{font-size:.78rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.pi{background:rgba(255,255,255,0.65);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.75);border-radius:12px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 10px rgba(124,58,237,0.06)}
+.pi-av{width:52px;height:60px;border-radius:8px;object-fit:cover;border:2px solid #a855f7;flex-shrink:0;background:rgba(255,255,255,0.5)}
+.pi-inf{flex:1;min-width:0}
+.pi-nm{font-weight:700;font-size:.93rem;color:#2d1b4e}
+.pi-mt{font-size:.74rem;color:#6b21a8;margin-top:2px}
+.pi-id{font-size:.68rem;color:#7c3aed;margin-top:2px}
+.pi-cat{margin-top:4px}
+.cbadge{display:inline-block;font-size:.66rem;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase}
+.ca{background:#9333ea;color:#fff}.cb{background:#2563eb;color:#fff}.cc{background:#7c3aed;color:#fff}.cd{background:#dc2626;color:#fff}.cn{background:rgba(255,255,255,.08);color:#c4b5fd}
+.pi-ac{display:flex;flex-direction:column;gap:5px}
+.pab{font-size:.68rem;padding:5px 9px;border-radius:7px;border:1px solid rgba(124,58,237,.2);background:rgba(255,255,255,0.5);color:#2d1b4e;cursor:pointer;font-family:'Baloo Da 2',sans-serif;white-space:nowrap;transition:all .15s}
+.pab:hover{background:rgba(124,58,237,.1);border-color:#7c3aed}
+.pab.dl{color:#d97706;border-color:rgba(245,158,11,.3)}
+.pab.dl:hover{background:rgba(245,158,11,.1)}
+.pab.rm{color:#ef4444;border-color:rgba(239,68,68,.25)}
+.pab.rm:hover{background:rgba(239,68,68,.08)}
+.empty{text-align:center;padding:40px;color:#6b21a8;font-size:.88rem}
+.loading{text-align:center;padding:30px;color:#6b21a8}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid rgba(124,58,237,.15);border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.logout{width:100%;padding:10px;background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);border:1px solid rgba(239,68,68,.3);border-radius:9px;color:#dc2626;font-family:'Baloo Da 2',sans-serif;font-size:.83rem;cursor:pointer;margin-bottom:14px}
+.logout:hover{background:rgba(239,68,68,.08)}
+.adm-sec-ttl{font-size:.72rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;margin-top:4px;padding:6px 0 4px;border-bottom:1px solid rgba(124,58,237,.12)}
+.tb-sky{border-color:rgba(14,165,233,.4)!important;color:#7dd3fc!important}
+.tb-sky:hover{border-color:#0ea5e9!important;background:rgba(14,165,233,.1)!important}
+.tb-warn{border-color:rgba(245,158,11,.4)!important;color:#fcd34d!important}
+.tb-warn:hover{background:rgba(245,158,11,.1)!important}
+.tb-danger{border-color:rgba(239,68,68,.4)!important;color:#f87171!important}
+.tb-danger:hover{background:rgba(239,68,68,.12)!important}
+.cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.cat-tab{padding:5px 13px;border-radius:20px;border:1.5px solid rgba(124,58,237,.2);background:rgba(255,255,255,0.55);color:rgba(109,40,217,0.6);font-family:'Baloo Da 2',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;backdrop-filter:blur(6px)}
+.cat-tab.on{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.cat-tab:hover:not(.on){border-color:#7c3aed;color:#6d28d9}
+.dl-prog{background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);border:1px solid rgba(14,165,233,.2);border-radius:10px;padding:14px;margin-bottom:10px;display:none}
+.dl-prog-bar{height:6px;background:rgba(14,165,233,.15);border-radius:3px;overflow:hidden;margin-top:8px}
+.dl-prog-fill{height:100%;background:linear-gradient(90deg,#0ea5e9,#38bdf8);border-radius:3px;transition:width .3s}
+.dl-prog-txt{font-size:.76rem;color:#0284c7;margin-top:5px;text-align:center}
+#cropCvs{cursor:grab;display:block}
+#cropCvs:active{cursor:grabbing}
+#cropov .modal{background:transparent;border:none;padding:0;max-width:440px;width:100%}
+.ov{position:fixed;inset:0;background:rgba(109,40,217,.25);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.ov.op{display:flex}
+.modal{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:22px;width:100%;max-width:320px;box-shadow:0 8px 32px rgba(124,58,237,0.15)}
+.modal h3{font-size:.95rem;color:#7c3aed;margin-bottom:14px}
+.modal .sel{margin-bottom:14px}
+.mbts{display:flex;gap:10px}
+.mbts button{flex:1;padding:11px;border-radius:9px;border:none;font-family:'Baloo Da 2',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer}
+.bsv{background:#7c3aed;color:#fff}.bcl{background:rgba(124,58,237,0.1);color:#6d28d9}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);border:1px solid rgba(124,58,237,.25);color:#2d1b4e;padding:10px 22px;border-radius:30px;font-size:.85rem;font-weight:600;z-index:300;transition:transform .3s,opacity .3s;opacity:0;white-space:nowrap;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(124,58,237,0.15)}
+.toast.er{background:rgba(255,255,255,0.85);border-color:#ef4444;color:#dc2626}
+.toast.sh{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ═══════════════════════════════════════
+   RULES POPUP
+═══════════════════════════════════════ */
+#rulesPopup{position:fixed;inset:0;background:rgba(75,0,130,0.55);backdrop-filter:blur(10px);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .4s both}
+.rules-box{background:linear-gradient(145deg,rgba(255,255,255,0.96),rgba(245,235,255,0.98));border-radius:20px;padding:24px 22px 20px;max-width:360px;width:100%;border:2px solid rgba(168,85,247,0.35);box-shadow:0 16px 60px rgba(124,58,237,0.25),0 2px 12px rgba(0,0,0,0.08);position:relative}
+.rules-box h2{font-size:1.05rem;color:#6d28d9;text-align:center;margin-bottom:14px;font-weight:800}
+.rules-list{list-style:none;padding:0;margin:0 0 14px}
+.rules-list li{font-size:.82rem;color:#2d1b4e;padding:7px 0 7px 28px;border-bottom:1px solid rgba(124,58,237,.08);position:relative;line-height:1.5}
+.rules-list li:last-child{border-bottom:none}
+.rules-list li::before{content:'•';color:#9333ea;font-size:1.1rem;position:absolute;left:8px;top:6px}
+.rules-ip{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:8px 12px;font-size:.78rem;color:#6d28d9;text-align:center;margin-bottom:14px;font-weight:600}
+.rules-timer{text-align:center;font-size:.78rem;color:#9333ea;margin-bottom:12px}
+.rules-timer span{font-weight:800;font-size:1rem;color:#7c3aed}
+.rules-close-btn{width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#9333ea);border:none;border-radius:11px;color:#fff;font-family:'Baloo Da 2',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.rules-close-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ═══════════════════════════════════════
+   PAYMENT POPUP
+═══════════════════════════════════════ */
+#paymentOv{position:fixed;inset:0;background:rgba(75,0,130,0.5);backdrop-filter:blur(8px);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+#paymentOv.op{display:flex}
+.pay-box{background:linear-gradient(145deg,rgba(255,255,255,0.97),rgba(245,235,255,0.98));border-radius:20px;padding:22px 20px 18px;max-width:360px;width:100%;border:2px solid rgba(168,85,247,0.3);box-shadow:0 16px 56px rgba(124,58,237,0.22)}
+.pay-box h3{font-size:1rem;color:#6d28d9;font-weight:800;text-align:center;margin-bottom:4px}
+.pay-box .pay-sub{font-size:.78rem;color:#9333ea;text-align:center;margin-bottom:14px}
+.pay-methods{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.pay-method{display:flex;align-items:center;gap:12px;background:rgba(124,58,237,.06);border:1.5px solid rgba(124,58,237,.15);border-radius:11px;padding:11px 14px}
+.pay-method-logo{font-size:1.4rem;width:32px;text-align:center}
+.pay-method-info{flex:1}
+.pay-method-name{font-size:.83rem;font-weight:700;color:#2d1b4e}
+.pay-method-num{font-size:.88rem;color:#7c3aed;font-weight:800;letter-spacing:.5px;margin-top:1px}
+.pay-method-type{font-size:.68rem;color:#9333ea;margin-top:1px}
+.pay-amount-note{background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.3);border-radius:9px;padding:9px 12px;font-size:.8rem;color:#92400e;text-align:center;margin-bottom:12px;font-weight:600}
+.pay-txn-lbl{font-size:.8rem;font-weight:700;color:#6b21a8;margin-bottom:5px}
+.pay-txn-input{width:100%;background:rgba(255,255,255,0.85);border:1.5px solid rgba(124,58,237,.25);border-radius:10px;padding:11px 14px;color:#2d1b4e;font-family:'Baloo Da 2',sans-serif;font-size:.93rem;outline:none;margin-bottom:12px}
+.pay-txn-input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.pay-btns{display:flex;gap:10px}
+.pay-cancel{flex:1;padding:11px;background:rgba(124,58,134,.08);border:1.5px solid rgba(124,58,237,.2);border-radius:10px;color:#6d28d9;font-family:'Baloo Da 2',sans-serif;font-size:.88rem;cursor:pointer}
+.pay-submit{flex:2;padding:11px;background:linear-gradient(135deg,#7c3aed,#9333ea);border:none;border-radius:10px;color:#fff;font-family:'Baloo Da 2',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(124,58,237,.3)}
+
+/* ═══════════════════════════════════════
+   PENDING / APPROVED BADGES
+═══════════════════════════════════════ */
+.badge-pending{display:inline-block;background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.4);color:#92400e;font-size:.66rem;font-weight:700;padding:2px 10px;border-radius:20px}
+.badge-approved{display:inline-block;background:rgba(16,185,129,.15);border:1.5px solid rgba(16,185,129,.4);color:#065f46;font-size:.66rem;font-weight:700;padding:2px 10px;border-radius:20px}
+.badge-rejected{display:inline-block;background:rgba(239,68,68,.12);border:1.5px solid rgba(239,68,68,.3);color:#991b1b;font-size:.66rem;font-weight:700;padding:2px 10px;border-radius:20px}
+.pab.approve{color:#10b981;border-color:rgba(16,185,129,.3)}
+.pab.approve:hover{background:rgba(16,185,129,.1)}
+.pab.reject-btn{color:#f87171;border-color:rgba(239,68,68,.25)}
+.pab.reject-btn:hover{background:rgba(239,68,68,.08)}
+.txn-info{font-size:.72rem;color:#7c3aed;margin-top:3px;word-break:break-all}
+
+.pay-method-sel{cursor:pointer;transition:all .18s;position:relative}
+.pay-method-sel:hover{border-color:rgba(124,58,237,.35);background:rgba(124,58,237,.08)}
+.pay-method-sel.active{border-color:#7c3aed;background:rgba(124,58,237,.1);box-shadow:0 0 0 2px rgba(124,58,237,.15)}
+.pay-sel-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(124,58,237,.3);flex-shrink:0;transition:all .18s;position:relative}
+.pay-method-sel.active .pay-sel-dot{background:#7c3aed;border-color:#7c3aed}
+.pay-method-sel.active .pay-sel-dot::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:.6rem;font-weight:800}
+
+/* Pending player card method badge */
+.method-badge{display:inline-block;font-size:.66rem;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase;margin-left:4px}
+
+/* ═══ DARK MODE ═══ */
+body.dark{background:linear-gradient(135deg,#0f0a1a 0%,#1a0f2e 50%,#0f0a1a 100%)!important;color:#e2d9f3}
+body.dark .sec{background:rgba(30,15,50,0.85)!important;border-color:rgba(168,85,247,.25)!important}
+body.dark .inp,body.dark .sel{background:rgba(30,15,50,0.8)!important;border-color:rgba(168,85,247,.3)!important;color:#e2d9f3!important}
+body.dark .nav{background:rgba(20,10,35,0.9)!important}
+body.dark .pi{background:rgba(30,15,50,0.8)!important}
+body.dark .stat{background:rgba(30,15,50,0.8)!important}
+body.dark .pay-box{background:rgba(20,10,35,0.97)!important;color:#e2d9f3}
+body.dark .pay-txn-input{background:rgba(30,15,50,0.8)!important;color:#e2d9f3!important}
+body.dark .rules-box{background:linear-gradient(145deg,rgba(20,10,35,0.97),rgba(30,15,50,0.98))!important;color:#e2d9f3}
+body.dark .modal{background:rgba(20,10,35,0.95)!important}
+body.dark .tb-btn{background:rgba(30,15,50,0.7)!important;color:#c4b5fd!important}
+body.dark .btn-out{background:rgba(30,15,50,0.6)!important;color:#c4b5fd!important}
+.dark-toggle{position:fixed;bottom:76px;right:16px;z-index:100;width:44px;height:44px;border-radius:50%;border:none;background:rgba(124,58,237,.85);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.4);backdrop-filter:blur(8px);transition:all .2s}
+.dark-toggle:hover{transform:scale(1.1)}
+
+/* ═══ CONFETTI ═══ */
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* ═══ ANALYTICS ═══ */
+.chart-wrap{margin:10px 0;background:rgba(255,255,255,.5);border-radius:12px;padding:14px;backdrop-filter:blur(10px)}
+.chart-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chart-bar-lbl{font-size:.72rem;color:#6b21a8;width:80px;flex-shrink:0;text-align:right}
+.chart-bar-bg{flex:1;height:22px;background:rgba(124,58,237,.1);border-radius:6px;overflow:hidden;position:relative}
+.chart-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#7c3aed,#c4b5fd);transition:width .8s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+.chart-bar-val{font-size:.65rem;font-weight:700;color:#fff}
+.chart-donut-wrap{display:flex;justify-content:center;margin:10px 0}
+.chart-legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.chart-legend-item{display:flex;align-items:center;gap:4px;font-size:.7rem;color:#6b21a8}
+.chart-legend-dot{width:10px;height:10px;border-radius:50%}
+
+/* ═══ DEADLINE / SEAT LIMIT ═══ */
+.deadline-banner{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;text-align:center;padding:8px 16px;font-size:.82rem;font-weight:700;position:sticky;top:54px;z-index:49}
+.seat-banner{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff;text-align:center;padding:8px 16px;font-size:.82rem;font-weight:700;position:sticky;top:54px;z-index:49}
+.deadline-closed{pointer-events:none;opacity:.5}
+
+/* ═══ STATUS CHECK ═══ */
+.status-result{border-radius:12px;padding:14px;margin-top:12px;font-size:.85rem;line-height:1.6}
+.status-pending{background:rgba(245,158,11,.12);border:1.5px solid rgba(245,158,11,.4);color:#92400e}
+.status-approved{background:rgba(16,185,129,.12);border:1.5px solid rgba(16,185,129,.4);color:#065f46}
+.status-rejected{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);color:#991b1b}
+.status-notfound{background:rgba(107,33,168,.08);border:1.5px solid rgba(107,33,168,.2);color:#6b21a8}
+
+/* ═══ WHATSAPP SHARE ═══ */
+.btn-wa{width:100%;padding:13px;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:12px;color:#fff;font-family:'Baloo Da 2',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(37,211,102,.3);margin-top:8px}
+.btn-wa:hover{background:linear-gradient(135deg,#128c7e,#075e54)}
+
+/* ═══ COLLAGE ═══ */
+#collageCanvas{width:100%;border-radius:12px;display:block;margin-top:10px}
+
+/* ═══ BULK APPROVE ═══ */
+.bulk-bar{background:rgba(124,58,237,.1);border:1.5px solid rgba(124,58,237,.25);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bulk-bar span{font-size:.8rem;color:#6b21a8;font-weight:600}
+.btn-bulk{padding:7px 14px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:8px;color:#fff;font-family:'Baloo Da 2',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer}
+
+/* ═══ POINTS TABLE ═══ */
+.pts-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.pts-table th{background:rgba(124,58,237,.15);color:#6b21a8;padding:8px 6px;text-align:center;font-weight:700;border-bottom:2px solid rgba(124,58,237,.2)}
+.pts-table td{padding:7px 6px;text-align:center;border-bottom:1px solid rgba(124,58,237,.08);color:#2d1b4e}
+.pts-table tr:hover td{background:rgba(124,58,237,.05)}
+
+/* ═══ MATCH RESULT ═══ */
+.match-card{background:rgba(255,255,255,.6);border:1px solid rgba(124,58,237,.15);border-radius:10px;padding:12px;margin-bottom:8px;backdrop-filter:blur(8px)}
+.match-score{display:flex;align-items:center;justify-content:center;gap:12px;font-size:1.3rem;font-weight:800;color:#7c3aed;margin:4px 0}
+.match-teams{display:flex;justify-content:space-between;font-size:.78rem;color:#6b21a8;font-weight:600}
+.method-bkash{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);color:#065f46}
+.method-nagad{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#991b1b}
+.method-rocket{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#92400e}
+.method-unknown{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#4c1d95}
+
+/* Pending list serial number */
+.pending-serial{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#f59e0b;color:#fff;border-radius:50%;font-size:.68rem;font-weight:800;flex-shrink:0;margin-right:2px}
+
+/* ═══════════════════════════════════════
+   ANIMATION KEYFRAMES
+═══════════════════════════════════════ */
+@keyframes fadeSlideDown{
+  from{opacity:0;transform:translateY(-28px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(32px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes scaleIn{
+  from{opacity:0;transform:scale(0.88)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes popIn{
+  0%{opacity:0;transform:scale(0.7) translateY(20px)}
+  70%{transform:scale(1.04) translateY(-3px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+@keyframes slideInLeft{
+  from{opacity:0;transform:translateX(-30px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes slideInRight{
+  from{opacity:0;transform:translateX(30px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes floatBall{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-8px) rotate(10deg)}
+}
+@keyframes shimmer{
+  0%{background-position:200% center}
+  100%{background-position:-200% center}
+}
+@keyframes blobPulse{
+  0%,100%{transform:scale(1) translate(0,0)}
+  33%{transform:scale(1.08) translate(2%,-2%)}
+  66%{transform:scale(0.95) translate(-1%,2%)}
+}
+@keyframes navUnderline{
+  from{width:0}
+  to{width:100%}
+}
+@keyframes cardEntrance{
+  from{opacity:0;transform:translateY(20px) scale(0.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes pulseGlow{
+  0%,100%{box-shadow:0 4px 20px rgba(124,58,237,.3)}
+  50%{box-shadow:0 4px 32px rgba(124,58,237,.55),0 0 0 4px rgba(124,58,237,.1)}
+}
+@keyframes dotBlink{
+  0%,100%{opacity:1}
+  50%{opacity:0.3}
+}
+
+/* ═══════════════════════════════════════
+   HEADER ANIMATIONS
+═══════════════════════════════════════ */
+.hdr{animation:fadeSlideDown .65s cubic-bezier(.22,1,.36,1) both}
+.hdr-ball{animation:floatBall 3s ease-in-out infinite, fadeIn .5s .2s both}
+.hdr h1{animation:fadeSlideDown .6s .15s cubic-bezier(.22,1,.36,1) both}
+.hdr .sub{animation:fadeIn .6s .3s both}
+.hdr .pill{animation:popIn .55s .42s cubic-bezier(.34,1.56,.64,1) both}
+#fbSt{animation:fadeIn .5s .55s both}
+.dot{animation:dotBlink 1.8s ease-in-out infinite}
+
+/* ═══════════════════════════════════════
+   NAV ANIMATION
+═══════════════════════════════════════ */
+.nav{animation:fadeSlideDown .5s .1s cubic-bezier(.22,1,.36,1) both}
+.ntab{transition:color .2s, border-color .25s, background .2s}
+.ntab:active{transform:scale(0.96)}
+
+/* ═══════════════════════════════════════
+   PAGE TRANSITION
+═══════════════════════════════════════ */
+.pg.on{animation:fadeSlideUp .5s cubic-bezier(.22,1,.36,1) both}
+
+/* ═══════════════════════════════════════
+   SECTION / CARD ANIMATIONS (staggered)
+═══════════════════════════════════════ */
+.sec{
+  animation:cardEntrance .55s cubic-bezier(.22,1,.36,1) both;
+  transition:box-shadow .2s, transform .2s;
+}
+.sec:hover{
+  box-shadow:0 8px 32px rgba(124,58,237,0.14),0 2px 8px rgba(0,0,0,0.06);
+  transform:translateY(-1px);
+}
+.wrap .sec:nth-child(1){animation-delay:.05s}
+.wrap .sec:nth-child(2){animation-delay:.13s}
+.wrap .sec:nth-child(3){animation-delay:.21s}
+.wrap .sec:nth-child(4){animation-delay:.29s}
+.wrap .sec:nth-child(5){animation-delay:.37s}
+
+/* ═══════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════ */
+.stats-row .stat:nth-child(1){animation:popIn .5s .08s cubic-bezier(.34,1.56,.64,1) both}
+.stats-row .stat:nth-child(2){animation:popIn .5s .18s cubic-bezier(.34,1.56,.64,1) both}
+.stats-row .stat:nth-child(3){animation:popIn .5s .28s cubic-bezier(.34,1.56,.64,1) both}
+.stat{transition:transform .2s,box-shadow .2s}
+.stat:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 8px 24px rgba(124,58,237,0.15)}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn-main{
+  animation:fadeSlideUp .5s .35s cubic-bezier(.22,1,.36,1) both;
+  transition:transform .18s,box-shadow .18s,background .2s;
+}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.45)}
+.btn-main:active{transform:scale(0.97)}
+
+.btn-gold{transition:transform .18s,box-shadow .18s}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,158,11,.4)}
+.btn-gold:active{transform:scale(0.97)}
+
+.btn-out{transition:transform .18s,background .2s}
+.btn-out:active{transform:scale(0.97)}
+
+/* ═══════════════════════════════════════
+   FORM INPUTS — float-in
+═══════════════════════════════════════ */
+.fld{animation:fadeSlideUp .45s cubic-bezier(.22,1,.36,1) both}
+.fld:nth-child(1){animation-delay:.06s}
+.fld:nth-child(2){animation-delay:.12s}
+.fld:nth-child(3){animation-delay:.18s}
+.fld:nth-child(4){animation-delay:.24s}
+.fld:nth-child(5){animation-delay:.30s}
+.inp,.sel{transition:border-color .2s,box-shadow .2s,transform .15s}
+.inp:focus,.sel:focus{transform:scale(1.01)}
+
+/* Photo upload box */
+.pbox{animation:scaleIn .5s .1s cubic-bezier(.22,1,.36,1) both;transition:border-color .2s,background .2s,transform .2s,box-shadow .2s}
+.pbox:hover{transform:scale(1.015);box-shadow:0 6px 24px rgba(124,58,237,.15)}
+
+/* Checkbox */
+.ckwrap{transition:background .2s,border-color .2s,transform .15s}
+.ckwrap:hover{transform:scale(1.01);border-color:rgba(124,58,237,.3)}
+
+/* ═══════════════════════════════════════
+   PLAYER LIST CARDS
+═══════════════════════════════════════ */
+.pi{
+  animation:cardEntrance .4s cubic-bezier(.22,1,.36,1) both;
+  transition:transform .18s,box-shadow .18s;
+}
+.pi:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 6px 20px rgba(124,58,237,0.12)}
+
+/* ═══════════════════════════════════════
+   SUCCESS PAGE
+═══════════════════════════════════════ */
+.suc-top .big{animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both}
+.suc-top h2{animation:fadeSlideUp .5s .15s cubic-bezier(.22,1,.36,1) both}
+.suc-top p{animation:fadeIn .5s .3s both}
+.card-preview{animation:scaleIn .55s .2s cubic-bezier(.22,1,.36,1) both}
+.act-row{animation:fadeSlideUp .5s .35s cubic-bezier(.22,1,.36,1) both}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.ov.op .modal{animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both}
+
+/* ═══════════════════════════════════════
+   ADMIN LOGIN
+═══════════════════════════════════════ */
+.a-lock{animation:floatBall 3s ease-in-out infinite, popIn .6s cubic-bezier(.34,1.56,.64,1) both}
+.a-login h2{animation:fadeSlideUp .5s .1s both}
+
+/* ═══════════════════════════════════════
+   CATEGORY TABS
+═══════════════════════════════════════ */
+.cat-tab{transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.cat-tab:hover:not(.on){transform:scale(1.07)}
+.cat-tab.on{animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both}
+
+/* ═══════════════════════════════════════
+   TOOLBAR BUTTONS
+═══════════════════════════════════════ */
+.tb-btn{transition:all .18s cubic-bezier(.34,1.56,.64,1)}
+.tb-btn:hover{transform:translateY(-2px) scale(1.04)}
+.tb-btn:active{transform:scale(0.96)}
+
+/* ═══════════════════════════════════════
+   BACKGROUND BLOBS — animated
+═══════════════════════════════════════ */
+body::before{animation:blobPulse 10s ease-in-out infinite}
+
+/* ═══════════════════════════════════════
+   THEME SWATCH
+═══════════════════════════════════════ */
+.theme-swatch{transition:transform .2s cubic-bezier(.34,1.56,.64,1),border-color .2s}
+.theme-swatch:hover{transform:scale(1.12)}
+.theme-swatch.on{animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both}
+
+/* ═══════════════════════════════════════
+   SEARCH BAR
+═══════════════════════════════════════ */
+.srch-w input{transition:border-color .2s,box-shadow .2s,transform .15s}
+.srch-w input:focus{transform:scale(1.01)}
+
+/* ═══════════════════════════════════════
+   LOGOUT BUTTON
+═══════════════════════════════════════ */
+.logout{transition:background .2s,transform .15s,color .2s}
+.logout:hover{transform:scale(1.01)}
+.logout:active{transform:scale(0.97)}
+</style>
+</head>
+<body>
+
+<!-- ══════ FEE ANNOUNCEMENT POPUP ══════ -->
+<div id="feeAnnouncementPopup" style="position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;background:rgba(20,0,50,0.75);backdrop-filter:blur(12px);animation:fadeIn .4s both">
+  <div id="feeAnnBox" style="text-align:center;padding:36px 28px;max-width:340px;width:90%;position:relative">
+    <!-- Lighting ring animation -->
+    <div id="feeGlowRing" style="position:absolute;inset:-18px;border-radius:50%;pointer-events:none;z-index:0;animation:feeRingPulse 1s ease-in-out infinite"></div>
+    <div style="position:relative;z-index:1;background:linear-gradient(145deg,rgba(255,255,255,0.97),rgba(245,235,255,0.98));border-radius:24px;padding:36px 28px;border:2px solid rgba(251,191,36,0.5);box-shadow:0 0 60px rgba(251,191,36,0.35),0 0 120px rgba(124,58,237,0.3),0 16px 60px rgba(0,0,0,0.2)">
+      <!-- Sparkles top -->
+      <div style="font-size:2rem;line-height:1;margin-bottom:8px;animation:floatBall 1.5s ease-in-out infinite">✨</div>
+      <div style="font-size:.85rem;font-weight:700;color:#7c3aed;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">রেজিস্ট্রেশন ফি</div>
+      <!-- Big fee text -->
+      <div style="font-size:4.5rem;font-weight:800;line-height:1;background:linear-gradient(135deg,#f59e0b,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:feeShimmer 1.5s linear infinite;background-size:200% auto;filter:drop-shadow(0 2px 8px rgba(245,158,11,.5))">৳৩০০</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#6d28d9;margin-top:8px;letter-spacing:1px">মাত্র তিনশো টাকা</div>
+      <!-- Sparkles bottom -->
+      <div style="font-size:1.5rem;margin-top:10px;animation:floatBall 1.8s ease-in-out infinite reverse">🏆⚽🏆</div>
+      <!-- countdown -->
+      <div id="feeCntWrap" style="margin-top:18px;font-size:.82rem;color:#9333ea;font-weight:600">⏳ <span id="feeCnt">5</span> সেকেন্ড পরে বন্ধ হবে</div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes feeRingPulse{
+  0%,100%{box-shadow:0 0 0 0px rgba(251,191,36,0),0 0 0 0px rgba(124,58,237,0)}
+  50%{box-shadow:0 0 40px 20px rgba(251,191,36,0.25),0 0 80px 40px rgba(124,58,237,0.2)}
+}
+@keyframes feeShimmer{
+  0%{background-position:200% center}
+  100%{background-position:-200% center}
+}
+@keyframes feeLightFlash{
+  0%,100%{opacity:1}
+  50%{opacity:0.7}
+}
+#feeAnnouncementPopup::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(251,191,36,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 20% 80%, rgba(124,58,237,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 80% 20%, rgba(168,85,247,0.12) 0%, transparent 60%);
+  pointer-events:none;animation:feeLightFlash 1s ease-in-out infinite;
+}
+</style>
+
+<!-- ══════ RULES POPUP (5 সেকেন্ড) ══════ -->
+<div id="rulesPopup">
+  <div class="rules-box">
+    <h2>📋 গুরুত্বপূর্ণ নিয়মাবলী</h2>
+    <div class="rules-ip" id="userIpBox">🌐 আপনার IP লোড হচ্ছে...</div>
+    <ul class="rules-list">
+      <li>রেজিস্ট্রেশন করলে <strong>পেন্ডিং</strong> অবস্থায় থাকবে</li>
+      <li>পেমেন্ট করার পর এডমিন <strong>অনুমোদন</strong> করলে রেজিস্ট্রেশন সম্পন্ন হবে</li>
+      <li>একটি মোবাইল নম্বরে শুধুমাত্র <strong>একবার</strong> রেজিস্ট্রেশন করা যাবে</li>
+      <li>ভুল তথ্য দিলে রেজিস্ট্রেশন <strong>বাতিল</strong> হতে পারে</li>
+      <li>পেমেন্টের পর <strong>ট্রানজেকশন আইডি</strong> অবশ্যই দিতে হবে</li>
+      <li>স্বপ্ন সারথি যুব সংঘের সকল নিয়ম <strong>মানতে হবে</strong></li>
+    </ul>
+    <div class="rules-timer">⏳ বন্ধ হবে <span id="rulesCnt">5</span> সেকেন্ড পরে</div>
+    <button class="rules-close-btn" id="rulesCloseBtn" disabled onclick="closeRules()">✅ বুঝেছি, শুরু করুন</button>
+  </div>
+</div>
+
+<!-- ══════ PAYMENT POPUP ══════ -->
+<div id="paymentOv">
+  <div class="pay-box">
+    <h3>💳 পেমেন্ট করুন</h3>
+    <p class="pay-sub">একটি মেথড সিলেক্ট করুন, তারপর পেমেন্ট করুন</p>
+    <div class="pay-methods">
+      <div class="pay-method pay-method-sel" id="pm-bkash" onclick="selectPayMethod('bkash')">
+        <div class="pay-method-logo">🟢</div>
+        <div class="pay-method-info">
+          <div class="pay-method-name">বিকাশ (bKash)</div>
+          <div class="pay-method-num" id="bkashNum">01955799040</div>
+          <div class="pay-method-type">ক্লিক করে সিলেক্ট করুন</div>
+        </div>
+        <div class="pay-sel-dot" id="dot-bkash"></div>
+      </div>
+      <div class="pay-method pay-method-sel" id="pm-nagad" onclick="selectPayMethod('nagad')">
+        <div class="pay-method-logo">🔴</div>
+        <div class="pay-method-info">
+          <div class="pay-method-name">নগদ (Nagad)</div>
+          <div class="pay-method-num" id="nagadNum">01955799040</div>
+          <div class="pay-method-type">ক্লিক করে সিলেক্ট করুন</div>
+        </div>
+        <div class="pay-sel-dot" id="dot-nagad"></div>
+      </div>
+      <div class="pay-method pay-method-sel" id="pm-rocket" onclick="selectPayMethod('rocket')">
+        <div class="pay-method-logo">🟠</div>
+        <div class="pay-method-info">
+          <div class="pay-method-name">রকেট (Rocket)</div>
+          <div class="pay-method-num" id="rocketNum">01955799040</div>
+          <div class="pay-method-type">ক্লিক করে সিলেক্ট করুন</div>
+        </div>
+        <div class="pay-sel-dot" id="dot-rocket"></div>
+      </div>
+    </div>
+    <div id="paySelectedInfo" style="display:none;background:rgba(124,58,237,.08);border:1.5px solid rgba(124,58,237,.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;color:#2d1b4e">
+      <span id="paySelText"></span>
+      <button onclick="copyPayNum()" style="float:right;background:none;border:none;color:#7c3aed;font-size:.78rem;cursor:pointer;font-family:inherit;font-weight:700">📋 কপি</button>
+    </div>
+    <div class="pay-amount-note">⚠️ উপরের নম্বরে অবশ্যই <strong>৳৩০০ সেন্ড মানি</strong> করুন। টাকা পাঠানোর পরই নিচে তথ্য দিন ভাই।</div>
+    <div class="pay-txn-lbl">যে নম্বর থেকে পাঠিয়েছেন <span style="color:#ef4444">*</span></div>
+    <input class="pay-txn-input" id="senderPhone" type="tel" placeholder="01XXXXXXXXX" maxlength="11" style="margin-bottom:10px">
+    <div class="pay-txn-lbl">ট্রানজেকশন আইডি <span style="color:#ef4444">*</span></div>
+    <input class="pay-txn-input" id="txnId" type="text" placeholder="যেমন: 8GH3KL9P2Q">
+    <div class="pay-btns">
+      <button class="pay-cancel" onclick="closePayment()">বাতিল</button>
+      <button class="pay-submit" onclick="submitWithPayment()">✅ জমা দিন</button>
+    </div>
+  </div>
+</div>
+
+<div class="hdr">
+  <div class="hdr-ball">⚽</div>
+  <h1>স্বপ্ন সারথি যুব সংঘ</h1>
+  <div class="sub">কান্দি কাবিলা পাড়া</div>
+  <div class="pill">🏆 শীতকালীন ফুটবল টুর্নামেন্ট ২০২৬</div>
+  <div style="margin-top:6px">
+    <span class="fb-status fb-wait" id="fbSt"><span class="dot"></span>&nbsp;Database সংযোগ হচ্ছে...</span>
+  </div>
+</div>
+
+<button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Dark Mode">🌙</button>
+
+<div id="deadlineBanner" style="display:none"></div>
+<div id="seatBanner" style="display:none"></div>
+
+<div class="nav">
+  <button class="ntab on" id="t-reg" onclick="goPage('reg')">📝 রেজিস্ট্রেশন</button>
+  <button class="ntab" id="t-trn" onclick="goPage('trn')">🏆 টুর্নামেন্ট</button>
+  <button class="ntab" id="t-adm" onclick="goPage('adm')">🔐 অ্যাডমিন</button>
+</div>
+
+<!-- REGISTER -->
+<div class="pg on" id="pg-reg">
+  <div class="wrap">
+    <div class="sec">
+      <div class="sec-ttl">📸 প্লেয়ারের ছবি</div>
+      <div class="pbox" id="pbox" onclick="document.getElementById('fi').click()">
+        <div class="phi">📷</div>
+        <div class="pht">ছবি আপলোড করুন<br><small style="opacity:.6">ক্লিক করে ছবি সিলেক্ট করুন</small></div>
+      </div>
+      <input type="file" id="fi" accept="image/*" onchange="loadPic(event)">
+      <div class="etxt" id="ep">⚠ ছবি দেওয়া বাধ্যতামূলক</div>
+    </div>
+    <div class="sec">
+      <div class="sec-ttl">👤 ব্যক্তিগত তথ্য</div>
+      <div class="fld">
+        <label class="lbl">সম্পূর্ণ নাম<span class="req">*</span></label>
+        <input class="inp" id="fn" type="text" placeholder="আপনার পুরো নাম লিখুন">
+        <div class="etxt" id="en">⚠ নাম দেওয়া বাধ্যতামূলক</div>
+      </div>
+      <div class="fld">
+        <label class="lbl">গ্রামের নাম<span class="req">*</span></label>
+        <input class="inp" id="fv" type="text" placeholder="গ্রামের নাম লিখুন">
+        <div class="etxt" id="ev">⚠ গ্রামের নাম দেওয়া বাধ্যতামূলক</div>
+      </div>
+      <div class="fld">
+        <label class="lbl">মোবাইল নম্বর<span class="req">*</span></label>
+        <input class="inp" id="fph" type="tel" placeholder="01XXXXXXXXX" maxlength="11">
+        <div class="etxt" id="eph">⚠ সঠিক মোবাইল নম্বর দিন</div>
+      </div>
+      <div class="fld">
+        <label class="lbl">ব্লাড গ্রুপ<span class="req">*</span></label>
+        <select class="sel" id="fbl">
+          <option value="">-- ব্লাড গ্রুপ সিলেক্ট করুন --</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+        <div class="etxt" id="ebl">⚠ ব্লাড গ্রুপ সিলেক্ট করুন</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-ttl">👕 জার্সির তথ্য</div>
+      <div class="fld">
+        <label class="lbl">জার্সির পিছনের নাম<span class="req">*</span></label>
+        <input class="inp" id="fjn" type="text" placeholder="যেমন: RAHIM" maxlength="15">
+        <div class="etxt" id="ejn">⚠ জার্সির নাম দেওয়া বাধ্যতামূলক</div>
+      </div>
+      <div class="fld">
+        <label class="lbl">জার্সি নাম্বার<span class="req">*</span></label>
+        <input class="inp" id="fjnum" type="tel" inputmode="numeric" placeholder="যেমন: 10" maxlength="2">
+        <div class="etxt" id="ejnum">⚠ জার্সি নাম্বার দিন (০-৯৯)</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-ttl">⚽ খেলার তথ্য</div>
+      <div class="fld">
+        <label class="lbl">পছন্দের পজিশন</label>
+        <select class="sel" id="fps">
+          <option value="যেকোনো">যেকোনো পজিশন</option>
+          <option value="গোলকিপার">গোলকিপার</option>
+          <option value="ডিফেন্ডার">ডিফেন্ডার</option>
+          <option value="মিডফিল্ডার">মিডফিল্ডার</option>
+          <option value="ফরোয়ার্ড">ফরোয়ার্ড</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label class="ckwrap">
+          <input type="checkbox" id="fcp" checked>
+          <span>আমি টুর্নামেন্টে খেলতে পারব ✅</span>
+        </label>
+      </div>
+      <div class="fld">
+        <label class="ckwrap">
+          <input type="checkbox" id="fag">
+          <span>সকল তথ্য সঠিক এবং আমি স্বপ্ন সারথি যুব সংঘ-এর সকল নিয়ম মানতে সম্মত আছি</span>
+        </label>
+        <div class="etxt" id="eag">⚠ সম্মতি দেওয়া বাধ্যতামূলক</div>
+      </div>
+    </div>
+    <button class="btn-main" id="subBtn" onclick="openPayment()">💳 পেমেন্ট করুন ও রেজিস্ট্রেশন করুন</button>
+    <div class="prog-wrap" id="progWrap">
+      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-txt" id="progTxt">প্রস্তুত হচ্ছে...</div>
+    </div>
+
+    <!-- CARD DOWNLOAD SECTION -->
+    <div class="sec" style="margin-top:18px">
+      <div class="sec-ttl">📥 কার্ড ডাউনলোড করুন</div>
+      <p style="font-size:.8rem;color:#6b21a8;margin-bottom:14px;line-height:1.6">এডমিন অনুমোদনের পর এখানে আপনার মোবাইল নম্বর দিয়ে কার্ড ডাউনলোড করুন।</p>
+      <div class="fld">
+        <label class="lbl">মোবাইল নম্বর</label>
+        <input class="inp" id="dlPhone" type="tel" placeholder="01XXXXXXXXX" maxlength="11">
+      </div>
+      <button class="btn-main" style="background:linear-gradient(135deg,#d97706,#f59e0b)" onclick="findAndDownloadCard()">🔍 কার্ড খুঁজুন ও ডাউনলোড করুন</button>
+      <div id="dlCardStatus" style="margin-top:10px;font-size:.82rem;text-align:center;display:none"></div>
+      <div id="dlCardPreview" style="margin-top:12px;display:none">
+        <canvas id="dlCvs" style="width:100%;border-radius:14px;border:2px solid #fbbf24;display:block;box-shadow:0 6px 24px rgba(251,191,36,.2)"></canvas>
+        <button class="btn-gold" style="width:100%;margin-top:10px" onclick="downloadFoundCard()">📥 কার্ড ডাউনলোড করুন</button>
+      </div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="pg" id="pg-suc">
+  <div class="suc-top">
+    <div class="big">⏳</div>
+    <h2 style="color:#d97706">রেজিস্ট্রেশন পেন্ডিং!</h2>
+    <p style="color:#92400e;font-weight:600">পেমেন্ট যাচাই হলে এডমিন অনুমোদন দেবে ✓</p>
+    <p style="font-size:.78rem;color:#7c3aed;margin-top:6px">এডমিন অনুমোদনের পর নিচের অপশন থেকে কার্ড ডাউনলোড করুন</p>
+  </div>
+  <div style="padding:0 16px 20px">
+    <button class="btn-out" style="width:100%" onclick="resetAll()">＋ নতুন রেজিস্ট্রেশন</button>
+  </div>
+</div>
+
+<!-- TOURNAMENT PAGE -->
+<div class="pg" id="pg-trn">
+  <div class="wrap">
+
+    <!-- TOURNAMENT SCHEDULE -->
+    <div class="sec">
+      <div class="sec-ttl">📅 টুর্নামেন্ট সিডিউল ও ফরম্যাট</div>
+
+      <!-- Format overview -->
+      <div style="background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1.5px solid rgba(124,58,237,.2);border-radius:12px;padding:14px;margin-bottom:14px">
+        <div style="font-size:.82rem;font-weight:800;color:#6d28d9;margin-bottom:10px;text-align:center">🏆 টুর্নামেন্ট ফরম্যাট</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <!-- Stage 1 -->
+          <div style="background:rgba(255,255,255,.65);border-radius:10px;padding:10px 12px;border-left:4px solid #7c3aed">
+            <div style="font-size:.78rem;font-weight:800;color:#7c3aed;margin-bottom:4px">⚽ গ্রুপ পর্ব (রাউন্ড রবিন)</div>
+            <div style="font-size:.75rem;color:#4c1d95;line-height:1.6">৪টি দল — প্রত্যেক দল প্রত্যেকটি দলের বিরুদ্ধে <strong>একবার করে</strong> খেলবে।<br>মোট ম্যাচ: <strong>৬টি</strong> (৪C২)</div>
+          </div>
+          <!-- Stage 2 -->
+          <div style="background:rgba(255,255,255,.65);border-radius:10px;padding:10px 12px;border-left:4px solid #f59e0b">
+            <div style="font-size:.78rem;font-weight:800;color:#d97706;margin-bottom:4px">🥇 সেমিফাইনাল কোয়ালিফাই</div>
+            <div style="font-size:.75rem;color:#4c1d95;line-height:1.6">গ্রুপ পর্বের পর <strong>শীর্ষ ৩টি দল</strong> সেমিফাইনালে যাবে।</div>
+          </div>
+          <!-- Stage 3 - Semifinal -->
+          <div style="background:rgba(255,255,255,.65);border-radius:10px;padding:10px 12px;border-left:4px solid #10b981">
+            <div style="font-size:.78rem;font-weight:800;color:#059669;margin-bottom:4px">🏅 সেমিফাইনাল</div>
+            <div style="font-size:.75rem;color:#4c1d95;line-height:1.6">
+              <strong>১ম vs ২য় দল</strong> → বিজয়ী সরাসরি ফাইনালে<br>
+              পরাজিত দল → <strong>৩য় দলের বিরুদ্ধে</strong> খেলবে → বিজয়ী ফাইনালে
+            </div>
+          </div>
+          <!-- Stage 4 - Final -->
+          <div style="background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(251,191,36,.1));border-radius:10px;padding:10px 12px;border-left:4px solid #fbbf24;border:1.5px solid rgba(251,191,36,.4)">
+            <div style="font-size:.78rem;font-weight:800;color:#b45309;margin-bottom:4px">🏆 ফাইনাল</div>
+            <div style="font-size:.75rem;color:#4c1d95;line-height:1.6">দুই সেমিফাইনাল বিজয়ীর মধ্যে <strong>চ্যাম্পিয়নশিপ ম্যাচ!</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flow diagram -->
+      <div style="font-size:.76rem;font-weight:700;color:#7c3aed;margin-bottom:8px;text-align:center">📊 টুর্নামেন্ট ফ্লো চার্ট</div>
+      <div style="background:rgba(255,255,255,.55);border-radius:12px;padding:14px;text-align:center;font-size:.74rem;color:#4c1d95;line-height:2.2;border:1px solid rgba(124,58,237,.12)">
+        <div>🔵 দল ১ &nbsp;🔵 দল ২ &nbsp;🔵 দল ৩ &nbsp;🔵 দল ৪</div>
+        <div style="color:#c4b5fd">↓ রাউন্ড রবিন (৬ ম্যাচ)</div>
+        <div>🏅 ১ম &nbsp;&nbsp;🏅 ২য় &nbsp;&nbsp;🏅 ৩য় &nbsp;&nbsp;❌ ৪র্থ</div>
+        <div style="color:#c4b5fd">↓ সেমিফাইনাল</div>
+        <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap">
+          <div style="background:rgba(124,58,237,.1);border-radius:8px;padding:6px 12px">⚔️ ১ম vs ২য়<br><span style="color:#059669;font-weight:800;font-size:.72rem">বিজয়ী → ফাইনাল</span></div>
+          <div style="background:rgba(16,185,129,.08);border-radius:8px;padding:6px 12px">⚔️ পরাজিত vs ৩য়<br><span style="color:#059669;font-weight:800;font-size:.72rem">বিজয়ী → ফাইনাল</span></div>
+        </div>
+        <div style="color:#c4b5fd">↓ ফাইনাল</div>
+        <div style="font-size:1rem;font-weight:800;color:#d97706">🏆 চ্যাম্পিয়ন! 🏆</div>
+      </div>
+
+      <!-- Group stage fixtures -->
+      <div style="font-size:.76rem;font-weight:700;color:#7c3aed;margin:14px 0 8px;text-align:center">⚽ গ্রুপ পর্বের ফিক্সচার (৬ ম্যাচ)</div>
+      <div id="scheduleFixtures" style="display:flex;flex-direction:column;gap:7px">
+
+        <!-- ম্যাচ ১: দল ১ vs দল ২ → বিশ্রাম: দল ৩, দল ৪ -->
+        <div class="match-card" style="text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:#9333ea;margin-bottom:4px">ম্যাচ ১</div>
+          <div class="match-teams"><span>দল ১</span><span>দল ২</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#7c3aed;margin:4px 0">VS</div>
+          <div style="font-size:.65rem;color:#c4b5fd;margin-top:3px">বিশ্রামে: দল ৩ · দল ৪</div>
+        </div>
+
+        <!-- ম্যাচ ২: দল ৩ vs দল ৪ → বিশ্রাম: দল ১, দল ২ -->
+        <div class="match-card" style="text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:#9333ea;margin-bottom:4px">ম্যাচ ২</div>
+          <div class="match-teams"><span>দল ৩</span><span>দল ৪</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#7c3aed;margin:4px 0">VS</div>
+          <div style="font-size:.65rem;color:#c4b5fd;margin-top:3px">বিশ্রামে: দল ১ · দল ২</div>
+        </div>
+
+        <!-- ম্যাচ ৩: দল ১ vs দল ৩ → বিশ্রাম: দল ২, দল ৪ -->
+        <div class="match-card" style="text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:#9333ea;margin-bottom:4px">ম্যাচ ৩</div>
+          <div class="match-teams"><span>দল ১</span><span>দল ৩</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#7c3aed;margin:4px 0">VS</div>
+          <div style="font-size:.65rem;color:#c4b5fd;margin-top:3px">বিশ্রামে: দল ২ · দল ৪</div>
+        </div>
+
+        <!-- ম্যাচ ৪: দল ২ vs দল ৪ → বিশ্রাম: দল ১, দল ৩ -->
+        <div class="match-card" style="text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:#9333ea;margin-bottom:4px">ম্যাচ ৪</div>
+          <div class="match-teams"><span>দল ২</span><span>দল ৪</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#7c3aed;margin:4px 0">VS</div>
+          <div style="font-size:.65rem;color:#c4b5fd;margin-top:3px">বিশ্রামে: দল ১ · দল ৩</div>
+        </div>
+
+        <!-- ম্যাচ ৫: দল ২ vs দল ৩ → বিশ্রাম: দল ১, দল ৪ -->
+        <div class="match-card" style="text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:#9333ea;margin-bottom:4px">ম্যাচ ৫</div>
+          <div class="match-teams"><span>দল ২</span><span>দল ৩</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#7c3aed;margin:4px 0">VS</div>
+          <div style="font-size:.65rem;color:#c4b5fd;margin-top:3px">বিশ্রামে: দল ১ · দল ৪</div>
+        </div>
+
+        <!-- ম্যাচ ৬: দল ১ vs দল ৪ → বিশ্রাম: দল ২, দল ৩ -->
+        <div class="match-card" style="text-align:center">
+          <div style="font-size:.7rem;font-weight:700;color:#9333ea;margin-bottom:4px">ম্যাচ ৬</div>
+          <div class="match-teams"><span>দল ১</span><span>দল ৪</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#7c3aed;margin:4px 0">VS</div>
+          <div style="font-size:.65rem;color:#c4b5fd;margin-top:3px">বিশ্রামে: দল ২ · দল ৩</div>
+        </div>
+        <!-- Semifinal -->
+        <div class="match-card" style="text-align:center;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.05)">
+          <div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:4px">🏅 সেমিফাইনাল ১</div>
+          <div class="match-teams"><span>১ম দল</span><span>২য় দল</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#059669;margin:4px 0">VS</div>
+        </div>
+        <div class="match-card" style="text-align:center;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.05)">
+          <div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:4px">🏅 সেমিফাইনাল ২</div>
+          <div class="match-teams"><span>সেমি-১ পরাজিত</span><span>৩য় দল</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#059669;margin:4px 0">VS</div>
+        </div>
+        <!-- Final -->
+        <div class="match-card" style="text-align:center;border-color:rgba(251,191,36,.5);background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(251,191,36,.05))">
+          <div style="font-size:.7rem;font-weight:700;color:#d97706;margin-bottom:4px">🏆 ফাইনাল</div>
+          <div class="match-teams"><span>সেমি-১ বিজয়ী</span><span>সেমি-২ বিজয়ী</span></div>
+          <div style="font-size:.85rem;font-weight:800;color:#d97706;margin:4px 0">VS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATUS CHECK -->
+    <div class="sec">
+      <div class="sec-ttl">📋 রেজিস্ট্রেশন স্ট্যাটাস চেক</div>
+      <p style="font-size:.8rem;color:#6b21a8;margin-bottom:12px;line-height:1.6">মোবাইল নম্বর দিয়ে আপনার রেজিস্ট্রেশনের অবস্থা জানুন।</p>
+      <div class="fld">
+        <input class="inp" id="stPhone" type="tel" placeholder="01XXXXXXXXX" maxlength="11">
+      </div>
+      <button class="btn-main" onclick="checkStatus()">🔍 স্ট্যাটাস দেখুন</button>
+      <div id="statusResult" style="display:none"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="sec">
+      <div class="sec-ttl">📊 পরিসংখ্যান</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="analyticsStats">
+        <div class="stat"><div class="stat-n" id="anTot">—</div><div class="stat-l">মোট রেজিস্ট্রেশন</div></div>
+        <div class="stat"><div class="stat-n" id="anAppr" style="color:#10b981">—</div><div class="stat-l">অ্যাপ্রুভড</div></div>
+        <div class="stat"><div class="stat-n" id="anPend" style="color:#d97706">—</div><div class="stat-l">পেন্ডিং</div></div>
+        <div class="stat"><div class="stat-n" id="anRej" style="color:#ef4444">—</div><div class="stat-l">রিজেক্টেড</div></div>
+      </div>
+    </div>
+
+    <!-- POINTS TABLE -->
+    <div class="sec">
+      <div class="sec-ttl">🏆 পয়েন্ট টেবিল</div>
+      <div id="pointsTableWrap">
+        <table class="pts-table" id="pointsTable">
+          <thead><tr><th>#</th><th>দল</th><th>ম্যাচ</th><th>জয়</th><th>ড্র</th><th>হার</th><th>পয়েন্ট</th></tr></thead>
+          <tbody id="pointsBody"><tr><td colspan="7" style="color:#c4b5fd;padding:20px">কোনো ম্যাচ নেই</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MATCH RESULTS -->
+    <div class="sec">
+      <div class="sec-ttl">⚽ ম্যাচ ফলাফল</div>
+      <div id="matchResultsList"><div style="text-align:center;color:#c4b5fd;font-size:.8rem;padding:20px">কোনো ম্যাচ ফলাফল নেই</div></div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="pg" id="pg-adm">
+  <div class="a-login" id="alog">
+    <div class="a-lock">🔐</div>
+    <h2>অ্যাডমিন লগইন</h2>
+    <div class="fld">
+      <label class="lbl">পাসওয়ার্ড</label>
+      <input class="inp" id="apass" type="password" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter')doLogin()" style="text-align:center;letter-spacing:3px">
+      <div class="etxt" id="epass">⚠ ভুল পাসওয়ার্ড!</div>
+    </div>
+    <button class="btn-main" style="margin-top:10px" onclick="doLogin()">লগইন করুন →</button>
+  </div>
+  <div class="a-panel" id="apanel">
+    <div class="wrap">
+      <button class="logout" onclick="doLogout()">🚪 লগআউট</button>
+
+      <!-- BULK APPROVE -->
+      <div class="adm-sec-ttl" style="color:#10b981">✅ বাল্ক অ্যাকশন</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div class="bulk-bar">
+          <span id="bulkCount">০ টি pending আছে</span>
+          <button class="btn-bulk" onclick="bulkApproveAll()">✅ সব Approve করুন</button>
+        </div>
+        <button class="tb-btn" style="width:100%;color:#d97706;border-color:rgba(245,158,11,.4)" onclick="exportWhatsAppList()">📲 WhatsApp তালিকা কপি করুন</button>
+      </div>
+
+      <!-- DEADLINE & SEAT SETTINGS -->
+      <div class="adm-sec-ttl">⏰ ডেডলাইন ও সিট লিমিট</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div class="fld" style="margin-bottom:10px">
+          <label class="lbl">📅 রেজিস্ট্রেশন ডেডলাইন</label>
+          <input type="datetime-local" class="inp" id="admDeadline">
+          <div style="font-size:.72rem;color:#c4b5fd;margin-top:4px">এই সময়ের পর ফর্ম বন্ধ হয়ে যাবে</div>
+        </div>
+        <div class="fld" style="margin-bottom:14px">
+          <label class="lbl">🔢 সর্বোচ্চ সিট সংখ্যা</label>
+          <input type="number" class="inp" id="admSeatLimit" placeholder="যেমন: 50" min="1" max="500">
+          <div style="font-size:.72rem;color:#c4b5fd;margin-top:4px">এই সংখ্যার পর রেজিস্ট্রেশন বন্ধ হবে (0 = সীমা নেই)</div>
+        </div>
+        <button class="btn-main" style="margin-top:0" onclick="saveDeadlineSettings()">💾 সংরক্ষণ করুন</button>
+      </div>
+
+      <!-- MATCH ENTRY -->
+      <div class="adm-sec-ttl">⚽ ম্যাচ ফলাফল এন্ট্রি</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px">
+          <input class="inp" id="team1Name" placeholder="দল ১ নাম" style="text-align:center">
+          <span style="font-size:1.1rem;font-weight:800;color:#7c3aed">VS</span>
+          <input class="inp" id="team2Name" placeholder="দল ২ নাম" style="text-align:center">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px">
+          <input class="inp" id="score1" type="number" min="0" placeholder="গোল" style="text-align:center;font-size:1.2rem;font-weight:800">
+          <span style="font-size:.8rem;color:#c4b5fd;text-align:center">স্কোর</span>
+          <input class="inp" id="score2" type="number" min="0" placeholder="গোল" style="text-align:center;font-size:1.2rem;font-weight:800">
+        </div>
+        <div class="fld" style="margin-bottom:10px">
+          <input type="date" class="inp" id="matchDate">
+        </div>
+        <button class="btn-main" style="margin-top:0" onclick="saveMatch()">⚽ ম্যাচ সংরক্ষণ</button>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat"><div class="stat-n" id="stot">—</div><div class="stat-l">মোট প্লেয়ার</div></div>
+        <div class="stat"><div class="stat-n" id="spending" style="color:#d97706">—</div><div class="stat-l">পেন্ডিং</div></div>
+        <div class="stat"><div class="stat-n" id="sapproved" style="color:#10b981">—</div><div class="stat-l">অ্যাপ্রুভড</div></div>
+      </div>
+
+      <!-- ADMIN ANALYTICS -->
+      <div class="adm-sec-ttl">📊 পরিসংখ্যান ও বিশ্লেষণ</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:.8rem;font-weight:700;color:#7c3aed">লাইভ ডেটা</span>
+          <button class="tb-btn tb-sky" style="padding:5px 12px;font-size:.72rem" onclick="refreshAdminAnalytics()">🔄 রিফ্রেশ</button>
+        </div>
+
+        <!-- Village Chart Admin -->
+        <div style="font-size:.75rem;font-weight:700;color:#7c3aed;margin-bottom:7px">📍 গ্রাম অনুযায়ী প্লেয়ার</div>
+        <div class="chart-wrap" id="admVillageChart" style="margin-bottom:14px">
+          <div style="text-align:center;color:#c4b5fd;font-size:.8rem;padding:10px">লোড হচ্ছে...</div>
+        </div>
+
+        <!-- Blood Group Admin -->
+        <div style="font-size:.75rem;font-weight:700;color:#7c3aed;margin-bottom:7px">🩸 ব্লাড গ্রুপ বিতরণ</div>
+        <div class="chart-wrap" style="margin-bottom:14px">
+          <canvas id="admBloodDonut" width="200" height="200" style="max-width:200px;display:block;margin:0 auto"></canvas>
+          <div class="chart-legend" id="admBloodLegend" style="margin-top:8px"></div>
+        </div>
+
+        <!-- Day Registration Admin -->
+        <div style="font-size:.75rem;font-weight:700;color:#7c3aed;margin-bottom:7px">📅 দিন অনুযায়ী রেজিস্ট্রেশন</div>
+        <div class="chart-wrap" id="admDayChart">
+          <div style="text-align:center;color:#c4b5fd;font-size:.8rem;padding:10px">লোড হচ্ছে...</div>
+        </div>
+      </div>
+
+      <!-- PENDING APPROVAL SECTION -->
+      <div class="adm-sec-ttl" style="color:#d97706">⏳ পেন্ডিং অনুমোদন <span id="pendingBadge" style="background:#f59e0b;color:#fff;font-size:.65rem;padding:1px 8px;border-radius:20px;margin-left:6px;vertical-align:middle"></span></div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <button class="tb-btn" style="background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.08));border-color:rgba(245,158,11,.4);color:#d97706;font-weight:700" onclick="togglePendingList()">
+            <span id="pendingToggleIcon">📋</span> পেন্ডিং তালিকা দেখুন
+          </button>
+          <button class="tb-btn tb-sky" onclick="loadPlayers()">🔄 রিফ্রেশ</button>
+        </div>
+        <div id="pendingListWrap" style="display:none">
+          <div id="pendingList"><div class="loading"><div class="spinner"></div><br>লোড হচ্ছে...</div></div>
+        </div>
+      </div>
+
+      <!-- PAYMENT NUMBER SETTINGS -->
+      <div class="adm-sec-ttl">💳 পেমেন্ট নম্বর সেটিং</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div class="fld" style="margin-bottom:10px">
+          <label class="lbl">🟢 বিকাশ নম্বর</label>
+          <input type="tel" class="inp" id="admBkash" placeholder="01955799040" maxlength="11">
+        </div>
+        <div class="fld" style="margin-bottom:10px">
+          <label class="lbl">🔴 নগদ নম্বর</label>
+          <input type="tel" class="inp" id="admNagad" placeholder="01955799040" maxlength="11">
+        </div>
+        <div class="fld" style="margin-bottom:14px">
+          <label class="lbl">🟠 রকেট নম্বর</label>
+          <input type="tel" class="inp" id="admRocket" placeholder="01955799040" maxlength="11">
+        </div>
+        <button class="btn-main" style="margin-top:0" onclick="savePaymentNums()">💾 নম্বর সংরক্ষণ করুন</button>
+      </div>
+
+      <div class="dl-prog" id="dlProg">
+        <div style="font-size:.8rem;color:#7dd3fc;font-weight:600" id="dlProgTxt">কার্ড তৈরি হচ্ছে...</div>
+        <div class="dl-prog-bar"><div class="dl-prog-fill" id="dlProgFill" style="width:0%"></div></div>
+      </div>
+
+      <!-- THEME CHANGER -->
+      <div class="adm-sec-ttl">🎨 ওয়েবসাইট থিম পরিবর্তন</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div class="preset-label">প্রিসেট থিম বেছে নিন:</div>
+        <div class="theme-grid" id="themeGrid">
+          <div class="theme-swatch on" style="background:linear-gradient(135deg,#4c1d95,#9333ea)" onclick="applyPreset('green')" title="সবুজ (ডিফল্ট)"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#1e3a5f,#2563eb)" onclick="applyPreset('blue')" title="নীল"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#4a1942,#9333ea)" onclick="applyPreset('purple')" title="বেগুনী"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#7c1d1d,#dc2626)" onclick="applyPreset('red')" title="লাল"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#1c3a3a,#0d9488)" onclick="applyPreset('teal')" title="টিল"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#1a1a2e,#e11d48)" onclick="applyPreset('darkrose')" title="ডার্ক রোজ"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#78350f,#f59e0b)" onclick="applyPreset('amber')" title="অ্যাম্বার"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#0f172a,#38bdf8)" onclick="applyPreset('sky')" title="আকাশী"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#111827,#6b7280)" onclick="applyPreset('dark')" title="ডার্ক"></div>
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#3f2a5f,#86efac,#fbbf24)" onclick="applyPreset('tri')" title="ত্রি-রং"></div>
+        </div>
+        <div class="preset-label" style="margin-top:8px">কাস্টম কালার বেছে নিন:</div>
+        <div class="cpick-row">
+          <div class="cpick-item">
+            <label>প্রাইমারি</label>
+            <input type="color" id="cp1" value="#4c1d95" oninput="applyCustom()">
+          </div>
+          <div class="cpick-item">
+            <label>সেকেন্ডারি</label>
+            <input type="color" id="cp2" value="#9333ea" oninput="applyCustom()">
+          </div>
+          <div class="cpick-item">
+            <label>অ্যাকসেন্ট</label>
+            <input type="color" id="cp3" value="#f59e0b" oninput="applyCustom()">
+          </div>
+        </div>
+        <button class="tb-btn" style="width:100%" onclick="resetTheme()">↩️ ডিফল্ট থিমে ফেরত</button>
+      </div>
+
+      <!-- CATEGORY PRIZE SETTINGS -->
+      <div class="adm-sec-ttl"> ক্যাটাগরি অনুযায়ী ভিত্তিমূল্য নির্ধারণ</div>
+      <div class="sec" style="margin-bottom:12px;padding:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div class="fld">
+            <label class="lbl">🏆 গ্রুপ A এর মূল্য</label>
+            <input type="number" class="inp" id="prizeA" placeholder="যেমন: 500000" style="text-align:center">
+          </div>
+          <div class="fld">
+            <label class="lbl">🥈 গ্রুপ B এর মূল্য</label>
+            <input type="number" class="inp" id="prizeB" placeholder="যেমন: 300000" style="text-align:center">
+          </div>
+          <div class="fld">
+            <label class="lbl">🥉 গ্রুপ C এর মূল্য</label>
+            <input type="number" class="inp" id="prizeC" placeholder="যেমন: 200000" style="text-align:center">
+          </div>
+          <div class="fld">
+            <label class="lbl">🎖️ গ্রুপ D এর মূল্য</label>
+            <input type="number" class="inp" id="prizeD" placeholder="যেমন: 100000" style="text-align:center">
+          </div>
+        </div>
+        <button class="btn-main" style="margin-top:0" onclick="savePrizes()">💾 মূল্য সংরক্ষণ করুন</button>
+        <div style="font-size:.75rem;color:#c4b5fd;margin-top:8px;text-align:center">সংখ্যা লিখুন (১ লাখ = 100000, ১ কোটি = 10000000)</div>
+      </div>
+
+      <!-- EXPORT TOOLS -->
+      <div class="adm-sec-ttl">📤 এক্সপোর্ট ও ডাউনলোড</div>
+      <div class="tb-row">
+        <button class="tb-btn" onclick="expCSV()">📊 CSV</button>
+        <button class="tb-btn" onclick="expTXT()">📄 TXT</button>
+        <button class="tb-btn" onclick="loadPlayers()">🔄 রিফ্রেশ</button>
+      </div>
+      <div class="tb-row">
+        <button class="tb-btn tb-sky" onclick="dlAllCards()">🖼️ সব কার্ড ডাউনলোড</button>
+        <button class="tb-btn tb-sky" onclick="dlCardsByCat()">📂 ক্যাটাগরি অনুযায়ী কার্ড</button>
+      </div>
+
+      <!-- DANGER ZONE -->
+      <div class="adm-sec-ttl" style="color:#f87171">⚠️ ডেটাবেজ নিয়ন্ত্রণ</div>
+      <div class="tb-row">
+        <button class="tb-btn tb-warn" onclick="delByCat()">🗑️ ক্যাটাগরি ওয়াইজ ডিলিট</button>
+        <button class="tb-btn tb-danger" onclick="delAll()">💥 সব ডেটা মুছুন</button>
+      </div>
+
+      <!-- SEARCH + FILTER -->
+      <div class="adm-sec-ttl">🔍 খোঁজ ও ফিল্টার</div>
+      <div class="srch-w">
+        <span class="srch-ico">🔍</span>
+        <input type="text" id="sq" placeholder="নাম, গ্রাম বা ফোন দিয়ে খুঁজুন..." oninput="renderList()">
+      </div>
+
+      <!-- CATEGORY FILTER TABS -->
+      <div class="cat-tabs">
+        <button class="cat-tab on" onclick="setCatFilter('')" id="ctf-all">সব</button>
+        <button class="cat-tab" onclick="setCatFilter('none')" id="ctf-none">ক্যাটাগরি নেই</button>
+        <button class="cat-tab" onclick="setCatFilter('A')" id="ctf-a">গ্রুপ A</button>
+        <button class="cat-tab" onclick="setCatFilter('B')" id="ctf-b">গ্রুপ B</button>
+        <button class="cat-tab" onclick="setCatFilter('C')" id="ctf-c">গ্রুপ C</button>
+        <button class="cat-tab" onclick="setCatFilter('D')" id="ctf-d">গ্রুপ D</button>
+      </div>
+
+      <div class="sec-lbl" style="margin-top:12px">
+        <span>📋 প্লেয়ার তালিকা</span>
+        <span id="lcnt" style="font-size:.72rem;color:#c4b5fd"></span>
+      </div>
+      <div id="plist"><div class="loading"><div class="spinner"></div><br>লোড হচ্ছে...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE BY CAT MODAL -->
+<div class="ov" id="delcatov">
+  <div class="modal">
+    <h3 style="color:#f87171">🗑️ ক্যাটাগরি অনুযায়ী ডিলিট</h3>
+    <p style="font-size:.82rem;color:#c4b5fd;margin-bottom:12px">কোন ক্যাটাগরির সব প্লেয়ার মুছবেন?</p>
+    <select class="sel" id="delcatsel" style="margin-bottom:14px">
+      <option value="">ক্যাটাগরি নেই (অ্যাসাইন হয়নি)</option>
+      <option value="A">গ্রুপ A</option>
+      <option value="B">গ্রুপ B</option>
+      <option value="C">গ্রুপ C</option>
+      <option value="D">গ্রুপ D</option>
+    </select>
+    <div class="mbts">
+      <button class="bcl" onclick="closeDelCat()">বাতিল</button>
+      <button class="bsv" style="background:#dc2626" onclick="confirmDelByCat()">মুছুন ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="ov" id="catov">
+  <div class="modal">
+    <h3>📂 ক্যাটাগরি নির্ধারণ</h3>
+    <select class="sel" id="catsel">
+      <option value="">ক্যাটাগরি নেই</option>
+      <option value="A">গ্রুপ A</option>
+      <option value="B">গ্রুপ B</option>
+      <option value="C">গ্রুপ C</option>
+      <option value="D">গ্রুপ D</option>
+    </select>
+    <div class="mbts">
+      <button class="bcl" onclick="closeCat()">বাতিল</button>
+      <button class="bsv" onclick="saveCat()">সেভ করুন ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="ov" id="editov">
+  <div class="modal" style="max-width:370px;max-height:90vh;overflow-y:auto">
+    <h3 style="color:#a78bfa;margin-bottom:14px">✏️ প্লেয়ার তথ্য এডিট</h3>
+
+    <!-- Photo edit -->
+    <div style="text-align:center;margin-bottom:14px">
+      <img id="ed-photo-prev" src="" style="width:90px;height:120px;object-fit:cover;border-radius:10px;border:2px solid #0ea5e9;display:none;margin-bottom:8px">
+      <br>
+      <button class="pab" style="color:#38bdf8;border-color:rgba(56,189,248,.3);font-size:.8rem;padding:7px 16px" onclick="editPickPhoto()">📷 ছবি পরিবর্তন করুন</button>
+      <button class="pab" id="cropBtn" style="color:#d8b4fe;border-color:rgba(74,222,128,.3);font-size:.8rem;padding:7px 16px;display:none;margin-top:6px" onclick="openCropTool()">✂️ ছবি ক্রপ করুন</button>
+    </div>
+
+    <div class="fld" style="margin-bottom:10px">
+      <label class="lbl">সম্পূর্ণ নাম</label>
+      <input class="inp" id="ed-name" type="text" placeholder="নাম">
+    </div>
+    <div class="fld" style="margin-bottom:10px">
+      <label class="lbl">গ্রামের নাম</label>
+      <input class="inp" id="ed-village" type="text" placeholder="গ্রাম">
+    </div>
+    <div class="fld" style="margin-bottom:10px">
+      <label class="lbl">মোবাইল নম্বর</label>
+      <input class="inp" id="ed-phone" type="tel" placeholder="01XXXXXXXXX" maxlength="11">
+    </div>
+    <div class="fld" style="margin-bottom:10px">
+      <label class="lbl">জার্সির পিছনের নাম</label>
+      <input class="inp" id="ed-jname" type="text" placeholder="যেমন: RAHIM" maxlength="15">
+    </div>
+    <div class="fld" style="margin-bottom:10px">
+      <label class="lbl">জার্সি নাম্বার</label>
+      <input class="inp" id="ed-jnum" type="tel" inputmode="numeric" placeholder="যেমন: 10" maxlength="2">
+    </div>
+    <div class="fld" style="margin-bottom:10px">
+      <label class="lbl">ব্লাড গ্রুপ</label>
+      <select class="sel" id="ed-blood">
+        <option value="">-- সিলেক্ট করুন --</option>
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+      </select>
+    </div>
+    <div class="fld" style="margin-bottom:16px">
+      <label class="lbl">পজিশন</label>
+      <select class="sel" id="ed-pos">
+        <option value="যেকোনো">যেকোনো পজিশন</option>
+        <option value="গোলকিপার">গোলকিপার</option>
+        <option value="ডিফেন্ডার">ডিফেন্ডার</option>
+        <option value="মিডফিল্ডার">মিডফিল্ডার</option>
+        <option value="ফরোয়ার্ড">ফরোয়ার্ড</option>
+      </select>
+    </div>
+    <div class="mbts">
+      <button class="bcl" onclick="closeEdit()">বাতিল</button>
+      <button class="bsv" style="background:#7c3aed" onclick="saveEdit()">💾 সেভ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- CROP TOOL MODAL -->
+<div class="ov" id="cropov" style="background:rgba(0,0,0,.95)">
+  <div style="width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div style="color:#38bdf8;font-weight:700;font-size:1rem">✂️ ছবি ক্রপ করুন</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.5);text-align:center">ড্র্যাগ করে সরান • স্ক্রোল করে জুম করুন</div>
+
+    <!-- Crop canvas container -->
+    <div style="position:relative;width:100%;max-width:340px;aspect-ratio:3/4;border:2px solid #38bdf8;border-radius:12px;overflow:hidden;background:#000;touch-action:none" id="cropBox">
+      <canvas id="cropCvs" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+      <!-- crop guide overlay -->
+      <div style="position:absolute;inset:0;pointer-events:none;border:3px dashed rgba(56,189,248,.5);border-radius:10px"></div>
+    </div>
+
+    <!-- Zoom slider -->
+    <div style="display:flex;align-items:center;gap:10px;width:100%;max-width:340px">
+      <span style="font-size:.75rem;color:#c4b5fd">🔍−</span>
+      <input type="range" id="cropZoom" min="50" max="300" value="100" style="flex:1;accent-color:#38bdf8" oninput="onZoomSlider()">
+      <span style="font-size:.75rem;color:#c4b5fd">+</span>
+    </div>
+
+    <div style="display:flex;gap:10px;width:100%;max-width:340px">
+      <button style="flex:1;padding:11px;border-radius:9px;background:rgba(255,255,255,.07);color:#c4b5fd;border:none;font-family:inherit;font-size:.88rem;cursor:pointer" onclick="closeCropTool()">বাতিল</button>
+      <button style="flex:1;padding:11px;border-radius:9px;background:linear-gradient(135deg,#0284c7,#38bdf8);color:#fff;border:none;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer" onclick="applyCrop()">✅ ক্রপ প্রয়োগ করুন</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+// ── FIREBASE ──────────────────────────────────────────
+firebase.initializeApp({
+  apiKey:"AIzaSyCQUzmvlK9EoYv0EcG5oiUyC7la7enY-3g",
+  authDomain:"player-registration-41051.firebaseapp.com",
+  projectId:"player-registration-41051",
+  storageBucket:"player-registration-41051.firebasestorage.app",
+  messagingSenderId:"334887167894",
+  appId:"1:334887167894:web:d4e66f50b87eff25cbdfb7"
+});
+const db=firebase.firestore();
+
+// Test connection
+db.collection('players').limit(1).get()
+  .then(()=>fbSt(true))
+  .catch(e=>fbSt(false,e));
+
+function fbSt(ok,e){
+  const el=document.getElementById('fbSt');
+  if(ok){el.className='fb-status fb-ok';el.innerHTML='<span class="dot"></span>&nbsp;Database সংযুক্ত ✓';}
+  else{el.className='fb-status fb-err';el.innerHTML='<span class="dot"></span>&nbsp;সংযোগ ব্যর্থ — Rules চেক করুন';console.error(e);}
+}
+
+// ── STATE ─────────────────────────────────────────────
+// ── IMGBB CONFIG (ফ্রি image hosting) ───────────────
+// ImgBB API key — https://api.imgbb.com থেকে ফ্রি key নিন
+const IMGBB_KEY = 'e996f980bf5a848bf1fab749e2de014f'; // ← আপনার key এখানে
+
+// Upload photo to ImgBB, returns permanent URL
+async function uploadToImgBB(base64data){
+  // Remove data:image/...;base64, prefix
+  const b64 = base64data.split(',')[1] || base64data;
+  const fd = new FormData();
+  fd.append('key', IMGBB_KEY);
+  fd.append('image', b64);
+  const res = await fetch('https://api.imgbb.com/1/upload', {method:'POST', body:fd});
+  const json = await res.json();
+  if(!json.success) throw new Error('ImgBB: '+(json.error?.message||'upload failed'));
+  return json.data.url; // permanent direct URL
+}
+
+// base64 → Blob (kept for compatibility)
+function b64toBlob(dataURL){
+  const [header,data]=dataURL.split(',');
+  const mime=header.match(/:(.*?);/)[1];
+  const bin=atob(data);
+  const arr=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+
+const PASS_HASH='fa897eeed0d7da6f70819b25d47db64098eebe61758eabe8f8871b5408c72571';
+async function hashPass(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+let picData=null, lastCvs=null, allP=[], editDocId=null, catFilter='';
+let categoryPrizes={A:'',B:'',C:'',D:''};
+
+// ── NAV ───────────────────────────────────────────────
+function goPage(p){
+  document.querySelectorAll('.pg').forEach(el=>el.classList.remove('on'));
+  const pg=document.getElementById('pg-'+p);
+  pg.classList.add('on');
+  pg.style.animation='none';
+  pg.offsetHeight;
+  pg.style.animation='';
+  document.querySelectorAll('.ntab').forEach(el=>el.classList.remove('on'));
+  const t=document.getElementById('t-'+p);
+  if(t) t.classList.add('on');
+  if(p==='adm'&&document.getElementById('apanel').style.display==='block') loadPlayers();
+  if(p==='trn'){renderMatchResults();renderPointsTable();renderAnalytics();}
+}
+
+// ── PHOTO ─────────────────────────────────────────────
+function loadPic(e){
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      // Smart resize: max 2000px (preserves excellent quality, stays uploadable)
+      // JPEG 0.95 = near-lossless, visually indistinguishable from original
+      const MAX=2000;
+      let w=img.width, h=img.height;
+      if(w>h){ if(w>MAX){h=Math.round(h*MAX/w);w=MAX;} }
+      else    { if(h>MAX){w=Math.round(w*MAX/h);h=MAX;} }
+      const cv=document.createElement('canvas');
+      cv.width=w; cv.height=h;
+      const ctx2=cv.getContext('2d');
+      ctx2.imageSmoothingEnabled=true;
+      ctx2.imageSmoothingQuality='high';
+      ctx2.drawImage(img,0,0,w,h);
+      picData=cv.toDataURL('image/jpeg',0.95); // near-lossless JPEG
+      const b=document.getElementById('pbox');
+      b.innerHTML=`<img src="${picData}" style="image-rendering:auto"><div class="chg">✏️ ছবি পরিবর্তন করতে ক্লিক করুন</div>`;
+      b.onclick=()=>document.getElementById('fi').click();
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+
+// ── VALIDATION ────────────────────────────────────────
+function se(id,v){document.getElementById(id).classList.toggle('sh',v);}
+function ie(id,v){document.getElementById(id).classList.toggle('er',v);}
+function prog(pct,msg){
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=msg;
+}
+
+// ── FEE ANNOUNCEMENT POPUP ────────────────────────────
+(function initFeePopup(){
+  const popup = document.getElementById('feeAnnouncementPopup');
+  const cntEl = document.getElementById('feeCnt');
+  let cnt = 5;
+  const iv = setInterval(()=>{
+    cnt--;
+    cntEl.textContent = cnt;
+    if(cnt <= 0){
+      clearInterval(iv);
+      popup.style.animation = 'fadeIn .3s reverse both';
+      setTimeout(()=>{ popup.style.display = 'none'; }, 300);
+    }
+  }, 1000);
+})();
+
+// ── RULES POPUP ───────────────────────────────────────
+(function initRules(){
+  fetch('https://api.ipify.org?format=json')
+    .then(r=>r.json()).then(d=>{
+      document.getElementById('userIpBox').innerHTML='🌐 আপনার IP: <strong>'+d.ip+'</strong>';
+    }).catch(()=>{
+      document.getElementById('userIpBox').textContent='🌐 IP লোড করা যায়নি';
+    });
+  let cnt=5;
+  const el=document.getElementById('rulesCnt');
+  const btn=document.getElementById('rulesCloseBtn');
+  const iv=setInterval(()=>{cnt--;el.textContent=cnt;if(cnt<=0){clearInterval(iv);btn.disabled=false;}},1000);
+})();
+
+function closeRules(){document.getElementById('rulesPopup').style.display='none';}
+
+// ── PAYMENT NUMBERS ───────────────────────────────────
+let paymentNums={bkash:'01955799040',nagad:'01955799040',rocket:'01955799040'};
+let selectedPayMethod=''; // 'bkash' | 'nagad' | 'rocket'
+
+function loadPaymentNums(){
+  const saved=localStorage.getItem('paymentNums');
+  if(saved) paymentNums=JSON.parse(saved);
+  document.getElementById('bkashNum').textContent=paymentNums.bkash||'01955799040';
+  document.getElementById('nagadNum').textContent=paymentNums.nagad||'01955799040';
+  document.getElementById('rocketNum').textContent=paymentNums.rocket||'01955799040';
+  const ab=document.getElementById('admBkash');
+  if(ab){ab.value=paymentNums.bkash||'';document.getElementById('admNagad').value=paymentNums.nagad||'';document.getElementById('admRocket').value=paymentNums.rocket||'';}
+}
+
+function savePaymentNums(){
+  paymentNums.bkash=document.getElementById('admBkash').value.trim();
+  paymentNums.nagad=document.getElementById('admNagad').value.trim();
+  paymentNums.rocket=document.getElementById('admRocket').value.trim();
+  localStorage.setItem('paymentNums',JSON.stringify(paymentNums));
+  loadPaymentNums();
+  toast('✅ পেমেন্ট নম্বর সংরক্ষিত হয়েছে!');
+}
+
+// ── PAYMENT METHOD SELECTION ──────────────────────────
+function selectPayMethod(method){
+  selectedPayMethod=method;
+  ['bkash','nagad','rocket'].forEach(m=>{
+    document.getElementById('pm-'+m).classList.toggle('active',m===method);
+  });
+  const labels={bkash:'🟢 বিকাশ',nagad:'🔴 নগদ',rocket:'🟠 রকেট'};
+  const num=paymentNums[method]||'01955799040';
+  document.getElementById('paySelText').innerHTML=`<strong>${labels[method]}</strong> নম্বরে পাঠান: <strong>${num}</strong>`;
+  document.getElementById('paySelectedInfo').style.display='block';
+}
+
+function copyPayNum(){
+  if(!selectedPayMethod) return;
+  const num=paymentNums[selectedPayMethod]||'';
+  navigator.clipboard.writeText(num).then(()=>toast('📋 নম্বর কপি হয়েছে: '+num)).catch(()=>{
+    toast('নম্বর: '+num);
+  });
+}
+
+// ── PAYMENT POPUP ─────────────────────────────────────
+function openPayment(){
+  let ok=true;
+  if(!picData){se('ep',true);ok=false;}else se('ep',false);
+  const nm=document.getElementById('fn').value.trim();
+  se('en',!nm);ie('fn',!nm);if(!nm)ok=false;
+  const vl=document.getElementById('fv').value.trim();
+  se('ev',!vl);ie('fv',!vl);if(!vl)ok=false;
+  const ph=document.getElementById('fph').value.trim();
+  const phOk=/^01\d{9}$/.test(ph);
+  se('eph',!phOk);ie('fph',!phOk);if(!phOk)ok=false;
+  const bl=document.getElementById('fbl').value;
+  se('ebl',!bl);ie('fbl',!bl);if(!bl)ok=false;
+  const jn=document.getElementById('fjn').value.trim();
+  se('ejn',!jn);ie('fjn',!jn);if(!jn)ok=false;
+  const jnum=document.getElementById('fjnum').value.trim();
+  const jnumOk=/^\d{1,2}$/.test(jnum);
+  se('ejnum',!jnumOk);ie('fjnum',!jnumOk);if(!jnumOk)ok=false;
+  const ag=document.getElementById('fag').checked;
+  se('eag',!ag);if(!ag)ok=false;
+  if(!ok){toast('⚠ সব তথ্য সঠিকভাবে পূরণ করুন',true);return;}
+  // Reset selection
+  selectedPayMethod='';
+  ['bkash','nagad','rocket'].forEach(m=>document.getElementById('pm-'+m).classList.remove('active'));
+  document.getElementById('paySelectedInfo').style.display='none';
+  document.getElementById('senderPhone').value='';
+  document.getElementById('txnId').value='';
+  document.getElementById('paymentOv').classList.add('op');
+}
+
+function closePayment(){document.getElementById('paymentOv').classList.remove('op');}
+
+async function submitWithPayment(){
+  if(!selectedPayMethod){toast('⚠ প্রথমে একটি পেমেন্ট মেথড সিলেক্ট করুন',true);return;}
+  const senderPh=document.getElementById('senderPhone').value.trim();
+  if(!/^01\d{9}$/.test(senderPh)){toast('⚠ যে নম্বর থেকে পাঠিয়েছেন সেটা সঠিকভাবে দিন',true);return;}
+  const txn=document.getElementById('txnId').value.trim();
+  if(!txn){toast('⚠ ট্রানজেকশন আইডি দিন',true);return;}
+  closePayment();
+  await doSubmit(txn, selectedPayMethod, senderPh);
+}
+
+// ── TOGGLE PENDING LIST (Admin) ───────────────────────
+let pendingListOpen=false;
+function togglePendingList(){
+  pendingListOpen=!pendingListOpen;
+  const wrap=document.getElementById('pendingListWrap');
+  const icon=document.getElementById('pendingToggleIcon');
+  wrap.style.display=pendingListOpen?'block':'none';
+  icon.textContent=pendingListOpen?'🔼':'📋';
+  if(pendingListOpen) renderPendingList();
+}
+
+// ── SUBMIT (with txnId + pending status) ──────────────
+async function doSubmit(txnId, payMethod, senderPhone){
+  const nm=document.getElementById('fn').value.trim();
+  const vl=document.getElementById('fv').value.trim();
+  const ph=document.getElementById('fph').value.trim();
+  const bl=document.getElementById('fbl').value;
+  const pos=document.getElementById('fps').value;
+  const jerseyName=document.getElementById('fjn').value.trim().toUpperCase();
+  const jerseyNumber=document.getElementById('fjnum').value.trim();
+
+  const btn=document.getElementById('subBtn');
+  btn.disabled=true;btn.textContent='⏳ চেক করা হচ্ছে...';
+  document.getElementById('progWrap').style.display='block';
+  prog(5,'সংযোগ যাচাই হচ্ছে...');
+
+  try{
+    prog(15,'ডুপ্লিকেট চেক হচ্ছে...');
+    const allSnap=await db.collection('players').get();
+    const existing=allSnap.docs.map(d=>d.data());
+    const nameTaken=existing.some(p=>(p.name||'').trim()===nm);
+    const phoneTaken=existing.some(p=>(p.phone||'').trim()===ph);
+    if(nameTaken){
+      btn.disabled=false;btn.textContent='💳 পেমেন্ট করুন ও রেজিস্ট্রেশন করুন';
+      document.getElementById('progWrap').style.display='none';
+      toast('❌ এই নামে আগেই রেজিস্ট্রেশন হয়েছে!',true);
+      se('en',true);ie('fn',true);return;
+    }
+    if(phoneTaken){
+      btn.disabled=false;btn.textContent='💳 পেমেন্ট করুন ও রেজিস্ট্রেশন করুন';
+      document.getElementById('progWrap').style.display='none';
+      toast('❌ এই মোবাইল নম্বরে আগেই রেজিস্ট্রেশন হয়েছে!',true);
+      se('eph',true);ie('fph',true);return;
+    }
+
+    prog(40,'ছবি আপলোড হচ্ছে...');
+    const pid='SS'+Date.now().toString().slice(-6);
+    const photoURL = await uploadToImgBB(picData);
+
+    prog(75,'তথ্য সেভ হচ্ছে...');
+    const data={
+      id:pid, name:nm, village:vl, phone:ph, blood:bl, position:pos,
+      jerseyName:jerseyName, jerseyNumber:jerseyNumber,
+      canPlay:document.getElementById('fcp').checked,
+      photoURL:photoURL,
+      photo:photoURL,
+      croppedPhoto:'',
+      category:'',
+      txnId:txnId||'',
+      payMethod:payMethod||'',
+      senderPhone:senderPhone||'',
+      status:'pending',
+      date:new Date().toLocaleDateString('bn-BD'),
+      tsMs:Date.now(),
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    };
+    prog(90,'Firebase-এ সেভ হচ্ছে...');
+    await db.collection('players').doc(pid).set(data);
+    prog(100,'✅ সম্পন্ন!');
+
+    setTimeout(()=>{
+      goPage('suc');
+      launchConfetti();
+      btn.disabled=false;btn.textContent='💳 পেমেন্ট করুন ও রেজিস্ট্রেশন করুন';
+      document.getElementById('progWrap').style.display='none';
+      toast('✅ রেজিস্ট্রেশন জমা হয়েছে! এডমিন অনুমোদনের অপেক্ষায়।');
+    },800);
+  }catch(err){
+    console.error('Registration error:',err);
+    btn.disabled=false;btn.textContent='💳 পেমেন্ট করুন ও রেজিস্ট্রেশন করুন';
+    document.getElementById('progWrap').style.display='none';
+    const msg=err.code==='permission-denied'
+      ? '❌ Firebase Rules বন্ধ আছে! Console-এ Rules "allow read, write: if true" করুন।'
+      : err.message && err.message.length<120
+        ? '❌ ত্রুটি: '+err.message
+        : '❌ সংযোগ সমস্যা — ইন্টারনেট ও Firebase Rules চেক করুন';
+    toast(msg,true);
+    alert(msg);
+  }
+}
+
+// ── PENDING LIST (Admin) ───────────────────────────────
+function renderPendingList(){
+  // Sort pending: oldest first (যে আগে করেছে সে আগে)
+  const pending=allP
+    .filter(p=>p.status==='pending'||!p.status)
+    .sort((a,b)=>(a.tsMs||0)-(b.tsMs||0));
+
+  const badge=document.getElementById('pendingBadge');
+  if(badge) badge.textContent=pending.length?pending.length+'টি':'';
+
+  const el=document.getElementById('pendingList');
+  if(!el) return;
+  if(!pending.length){
+    el.innerHTML='<div class="empty" style="padding:14px;font-size:.82rem">✅ কোনো পেন্ডিং রেজিস্ট্রেশন নেই</div>';
+    return;
+  }
+
+  const methodLabel={bkash:'🟢 বিকাশ',nagad:'🔴 নগদ',rocket:'🟠 রকেট'};
+  const methodCls={bkash:'method-bkash',nagad:'method-nagad',rocket:'method-rocket'};
+
+  el.innerHTML=pending.map((p,idx)=>{
+    const delay=(idx*0.05).toFixed(2);
+    const mKey=(p.payMethod||'').toLowerCase();
+    const mBadge=mKey&&methodLabel[mKey]
+      ? `<span class="method-badge ${methodCls[mKey]}">${methodLabel[mKey]}</span>`
+      : `<span class="method-badge method-unknown">❓ অজানা</span>`;
+    const serial=idx+1;
+    // Format time
+    const timeStr=p.tsMs?new Date(p.tsMs).toLocaleTimeString('bn-BD',{hour:'2-digit',minute:'2-digit'}):'';
+    const dateStr=p.date||'';
+    return `<div class="pi" style="animation-delay:${delay}s;border-left:3px solid #f59e0b">
+      <div class="pending-serial">${serial}</div>
+      <img class="pi-av" src="${p.photo||p.photoURL||''}" alt="" onerror="this.style.opacity='.2'">
+      <div class="pi-inf" style="min-width:0">
+        <div class="pi-nm">${p.name||''}</div>
+        <div class="pi-mt">${p.phone||''} • ${p.village||''}</div>
+        ${p.jerseyName?`<div class="pi-mt">👕 ${p.jerseyName} • #${p.jerseyNumber||'—'}</div>`:''}
+        <div class="pi-mt">${dateStr}${timeStr?' ('+timeStr+')':''}</div>
+        <div style="margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+          ${mBadge}
+          <span class="txn-info" style="margin:0">TrxID: <strong>${p.txnId||'—'}</strong></span>
+        </div>
+        ${p.senderPhone?`<div style="font-size:.71rem;color:#d97706;margin-top:3px">📱 প্রেরক: <strong>${p.senderPhone}</strong></div>`:''}
+
+      </div>
+      <div class="pi-ac">
+        <button class="pab approve" onclick="approvePlayer('${p.docId}')">✅ অ্যাপ্রুভ</button>
+        <button class="pab reject-btn" onclick="rejectPlayer('${p.docId}')">❌ রিজেক্ট</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── APPROVE / REJECT ──────────────────────────────────
+async function approvePlayer(docId){
+  if(!confirm('এই প্লেয়ারকে অনুমোদন করবেন?'))return;
+  try{
+    await db.collection('players').doc(docId).update({status:'approved'});
+    const p=allP.find(x=>x.docId===docId);
+    if(p) p.status='approved';
+    renderList();
+    if(pendingListOpen) renderPendingList();
+    toast('✅ প্লেয়ার অনুমোদিত হয়েছে!');
+  }catch(e){toast('❌ ত্রুটি: '+e.message,true);}
+}
+
+async function rejectPlayer(docId){
+  if(!confirm('এই প্লেয়ারকে রিজেক্ট করবেন?'))return;
+  try{
+    await db.collection('players').doc(docId).update({status:'rejected'});
+    const p=allP.find(x=>x.docId===docId);
+    if(p) p.status='rejected';
+    renderList();
+    if(pendingListOpen) renderPendingList();
+    toast('❌ প্লেয়ার রিজেক্ট করা হয়েছে');
+  }catch(e){toast('❌ ত্রুটি: '+e.message,true);}
+}
+
+// Load payment numbers on page load
+loadPaymentNums();
+
+// ── CARD DOWNLOAD BY PHONE ────────────────────────────
+let foundPlayerData = null;
+
+async function findAndDownloadCard(){
+  const ph = document.getElementById('dlPhone').value.trim();
+  if(!/^01\d{9}$/.test(ph)){
+    toast('⚠ সঠিক মোবাইল নম্বর দিন',true);return;
+  }
+  const statusEl = document.getElementById('dlCardStatus');
+  const previewEl = document.getElementById('dlCardPreview');
+  statusEl.style.display='block';
+  previewEl.style.display='none';
+  statusEl.innerHTML='<span style="color:#7c3aed">🔍 খোঁজা হচ্ছে...</span>';
+  foundPlayerData=null;
+
+  try{
+    const snap = await db.collection('players').where('phone','==',ph).limit(1).get();
+    if(snap.empty){
+      statusEl.innerHTML='<span style="color:#ef4444">❌ এই নম্বরে কোনো রেজিস্ট্রেশন পাওয়া যায়নি।</span>';
+      return;
+    }
+    const p = snap.docs[0].data();
+    if(p.status==='pending'||!p.status){
+      statusEl.innerHTML='<span style="color:#d97706">⏳ আপনার রেজিস্ট্রেশন এখনো পেন্ডিং। এডমিন অনুমোদনের পর কার্ড ডাউনলোড করতে পারবেন।</span>';
+      return;
+    }
+    if(p.status==='rejected'){
+      statusEl.innerHTML='<span style="color:#ef4444">❌ আপনার রেজিস্ট্রেশন অনুমোদিত হয়নি। বিস্তারিত জানতে এডমিনের সাথে যোগাযোগ করুন।</span>';
+      return;
+    }
+    // approved — build card
+    statusEl.innerHTML='<span style="color:#10b981">✅ অনুমোদিত! কার্ড তৈরি হচ্ছে...</span>';
+    foundPlayerData = p;
+    const cvs = document.getElementById('dlCvs');
+    // Load prizes first
+    const savedPrizes=localStorage.getItem('categoryPrizes');
+    if(savedPrizes) categoryPrizes=JSON.parse(savedPrizes);
+    await new Promise(resolve=>{
+      buildCard(p, cvs, 3200, false);
+      setTimeout(resolve, 1200);
+    });
+    previewEl.style.display='block';
+    statusEl.innerHTML='<span style="color:#10b981">✅ কার্ড প্রস্তুত — ডাউনলোড করুন!</span>';
+  }catch(e){
+    statusEl.innerHTML='<span style="color:#ef4444">❌ ত্রুটি: '+e.message+'</span>';
+  }
+}
+
+function downloadFoundCard(){
+  const cvs=document.getElementById('dlCvs');
+  const name=foundPlayerData?foundPlayerData.name:'player';
+  const a=document.createElement('a');
+  a.href=cvs.toDataURL('image/png');
+  a.download=`card_${name}.png`;
+  a.click();
+  toast('✅ কার্ড ডাউনলোড হচ্ছে!');
+}
+
+
+function buildCard(p,canvas,W,store){
+  // Landscape card: W x 0.62W (FIFA card proportions)
+  const H=Math.round(W*0.62);
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+
+  const u=W/1000; // unit scale
+
+  // ── FULL CARD BACKGROUND (dark green gradient) ────────
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#021a0c');
+  bg.addColorStop(0.5,'#2d1b4e');
+  bg.addColorStop(1,'#021a0c');
+  ctx.fillStyle=bg;
+  rr(ctx,0,0,W,H,28*u);ctx.fill();
+
+  // ── SUBTLE HEXAGON PATTERN (right half only) ──────────
+  ctx.save();ctx.globalAlpha=0.045;
+  ctx.strokeStyle='#d8b4fe';ctx.lineWidth=u*1.2;
+  const hs=u*38, hx=Math.sqrt(3)*hs/2;
+  for(let row=-1;row<H/(hs*1.5)+2;row++){
+    for(let col=-1;col<W/(hx*2)+2;col++){
+      const cx2=(col*2+(row%2))*hx + W*0.42;
+      const cy2=row*hs*1.5;
+      ctx.beginPath();
+      for(let i=0;i<6;i++){
+        const a=Math.PI/180*(60*i-30);
+        i===0?ctx.moveTo(cx2+hs*Math.cos(a),cy2+hs*Math.sin(a)):ctx.lineTo(cx2+hs*Math.cos(a),cy2+hs*Math.sin(a));
+      }
+      ctx.closePath();ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // ── OUTER GOLD BORDER ────────────────────────────────
+  const bw=u*4;
+  const goldG=ctx.createLinearGradient(0,0,W,H);
+  goldG.addColorStop(0,'#b45309');goldG.addColorStop(0.5,'#fbbf24');goldG.addColorStop(1,'#b45309');
+  ctx.strokeStyle=goldG; ctx.lineWidth=bw;
+  rr(ctx,bw/2,bw/2,W-bw,H-bw,26*u); ctx.stroke();
+
+  // ── INNER BORDER ─────────────────────────────────────
+  ctx.strokeStyle='rgba(251,191,36,0.2)'; ctx.lineWidth=u*1.5;
+  rr(ctx,u*10,u*10,W-u*20,H-u*20,22*u); ctx.stroke();
+
+  // ── PHOTO PANEL (left 42%) ────────────────────────────
+  const photoW=Math.round(W*0.42);
+  const photoH=H;
+
+  // Photo background gradient
+  const pbg=ctx.createLinearGradient(0,0,photoW,H);
+  pbg.addColorStop(0,'#1e0a3f');pbg.addColorStop(1,'#3f2a5f');
+  ctx.save();
+  rr(ctx,0,0,photoW,H,0);
+  ctx.clip();
+  ctx.fillStyle=pbg;ctx.fillRect(0,0,photoW,H);
+
+  // Diagonal accent line behind photo
+  ctx.save();ctx.globalAlpha=0.15;
+  const dg=ctx.createLinearGradient(photoW,0,photoW-u*80,H);
+  dg.addColorStop(0,'#fbbf24');dg.addColorStop(1,'transparent');
+  ctx.fillStyle=dg;
+  ctx.beginPath();ctx.moveTo(photoW,0);ctx.lineTo(photoW-u*60,0);
+  ctx.lineTo(photoW-u*120,H);ctx.lineTo(photoW,H);ctx.closePath();ctx.fill();
+  ctx.restore();ctx.restore();
+
+  // ── DRAW PHOTO ────────────────────────────────────────
+  const photoSrc=p.croppedPhoto||p.photo||p.photoBase64||p.photoURL||'';
+  const img=new Image();img.crossOrigin='anonymous';
+
+  const drawInfo=()=>{
+    // ── DIVIDER (diagonal slash between photo and info) ──
+    ctx.save();
+    const slashW=u*55;
+    const slashG=ctx.createLinearGradient(photoW-slashW/2,0,photoW+slashW/2,H);
+    slashG.addColorStop(0,'#1e0a3f');
+    slashG.addColorStop(0.4,'#9333ea');
+    slashG.addColorStop(1,'#2d1b4e');
+    ctx.fillStyle=slashG;
+    ctx.beginPath();
+    ctx.moveTo(photoW-u*20,0);ctx.lineTo(photoW+u*35,0);
+    ctx.lineTo(photoW+u*15,H);ctx.lineTo(photoW-u*40,H);
+    ctx.closePath();ctx.fill();
+    // Gold accent line on slash
+    ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=u*2;
+    ctx.beginPath();ctx.moveTo(photoW+u*30,0);ctx.lineTo(photoW+u*10,H);ctx.stroke();
+    ctx.restore();
+
+    // ── INFO PANEL (right side) ───────────────────────
+    const infoX=photoW+u*50;
+    const infoW=W-infoX-u*20;
+    const cx3=infoX+infoW/2;
+
+    // ── TOP LOGO/TITLE AREA ───────────────────────────
+    // Football icon circle
+    const iconR=u*28;
+    const iconCx=infoX+iconR+u*5;
+    const iconCy=u*38;
+    const icirc=ctx.createRadialGradient(iconCx,iconCy,0,iconCx,iconCy,iconR);
+    icirc.addColorStop(0,'#9333ea');icirc.addColorStop(1,'#4c1d95');
+    ctx.fillStyle=icirc;
+    ctx.beginPath();ctx.arc(iconCx,iconCy,iconR,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(251,191,36,0.7)';ctx.lineWidth=u*2;
+    ctx.beginPath();ctx.arc(iconCx,iconCy,iconR,0,Math.PI*2);ctx.stroke();
+    ctx.textAlign='center';ctx.fillStyle='#fff';
+    ctx.font=`${u*28}px sans-serif`;
+    ctx.fillText('⚽',iconCx,iconCy+u*10);
+
+    // Club name right of icon
+    ctx.textAlign='left';
+    ctx.fillStyle='#fbbf24';
+    ctx.font=`700 ${u*19}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('স্বপ্ন সারথি যুব সংঘ',iconCx+iconR+u*10,iconCy-u*6);
+    ctx.fillStyle='rgba(255,255,255,0.55)';
+    ctx.font=`500 ${u*13}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('কান্দি কাবিলা পাড়া',iconCx+iconR+u*10,iconCy+u*11);
+
+    // Tournament badge
+    const badgeX=infoX+infoW-u*5;
+    const badgeY=u*12;
+    const badgeW=u*160;const badgeH=u*32;
+    const badgeG=ctx.createLinearGradient(badgeX-badgeW,badgeY,badgeX,badgeY+badgeH);
+    badgeG.addColorStop(0,'#78350f');badgeG.addColorStop(1,'#d97706');
+    ctx.fillStyle=badgeG;
+    rr(ctx,badgeX-badgeW,badgeY,badgeW,badgeH,badgeH/2);ctx.fill();
+    ctx.textAlign='center';ctx.fillStyle='#fff';
+    ctx.font=`700 ${u*13}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('🏆 ফুটবল টুর্নামেন্ট ২০২৬',badgeX-badgeW/2,badgeY+badgeH*0.68);
+
+    // ── SEPARATOR LINE ────────────────────────────────
+    const sepY=u*76;
+    const sepG=ctx.createLinearGradient(infoX,sepY,infoX+infoW,sepY);
+    sepG.addColorStop(0,'transparent');sepG.addColorStop(0.3,'#fbbf24');sepG.addColorStop(1,'transparent');
+    ctx.strokeStyle=sepG;ctx.lineWidth=u*1.5;
+    ctx.beginPath();ctx.moveTo(infoX,sepY);ctx.lineTo(infoX+infoW,sepY);ctx.stroke();
+
+    // ── PLAYER NAME ───────────────────────────────────
+    const nm=p.name||'';
+    const nameY=u*115;
+    // Name shadow/glow
+    ctx.save();ctx.shadowColor='rgba(196,181,253,0.4)';ctx.shadowBlur=u*20;
+    ctx.textAlign='left';ctx.fillStyle='#ffffff';
+    let nameFontSize=u*46;
+    ctx.font=`800 ${nameFontSize}px 'Baloo Da 2',sans-serif`;
+    while(ctx.measureText(nm).width>infoW*0.95&&nameFontSize>u*24){
+      nameFontSize-=u*2;
+      ctx.font=`800 ${nameFontSize}px 'Baloo Da 2',sans-serif`;
+    }
+    ctx.fillText(nm,infoX,nameY);
+    ctx.restore();
+
+    // Position badge below name
+    const posText=p.position||'যেকোনো';
+    const pbadgeY=u*130;
+    ctx.font=`600 ${u*14}px 'Baloo Da 2',sans-serif`;
+    const pbw=ctx.measureText(posText).width+u*24;
+    const pbh=u*26;
+    const posBg=ctx.createLinearGradient(infoX,pbadgeY,infoX+pbw,pbadgeY+pbh);
+    posBg.addColorStop(0,'rgba(147,51,234,0.35)');posBg.addColorStop(1,'rgba(147,51,234,0.15)');
+    ctx.fillStyle=posBg;rr(ctx,infoX,pbadgeY,pbw,pbh,pbh/2);ctx.fill();
+    ctx.strokeStyle='rgba(196,181,253,0.5)';ctx.lineWidth=u*1;
+    rr(ctx,infoX,pbadgeY,pbw,pbh,pbh/2);ctx.stroke();
+    ctx.fillStyle='#d8b4fe';ctx.textAlign='center';
+    ctx.font=`600 ${u*13}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('⚽ '+posText,infoX+pbw/2,pbadgeY+pbh*0.72);
+
+    // ── INFO ROWS ─────────────────────────────────────
+    const infoRows=[
+      {icon:'📍',label:'গ্রাম',val:p.village||'—'},
+      {icon:'📞',label:'মোবাইল',val:p.phone||'—'},
+      {icon:'🩸',label:'রক্তের গ্রুপ',val:p.blood||'—'},
+      {icon:'©️',label:'ক্যাটাগরি',val:p.category?`গ্রুপ ${p.category}`:'নির্ধারিত নয়'},
+      {icon:'💰',label:'ভিত্তিমূল্য',val:p.category&&categoryPrizes[p.category]?formatPrize(categoryPrizes[p.category]):'—'},
+    ];
+    const rowStartY=u*175;
+    const rowH=u*58;
+    const rowGap=u*8;
+
+    infoRows.forEach((row,i)=>{
+      const ry=rowStartY+i*(rowH+rowGap);
+      // Row background
+      const rbg=ctx.createLinearGradient(infoX,ry,infoX+infoW,ry+rowH);
+      rbg.addColorStop(0,'rgba(147,51,234,0.12)');
+      rbg.addColorStop(1,'rgba(147,51,234,0.04)');
+      ctx.fillStyle=rbg;rr(ctx,infoX,ry,infoW,rowH,u*10);ctx.fill();
+      ctx.strokeStyle='rgba(196,181,253,0.18)';ctx.lineWidth=u;
+      rr(ctx,infoX,ry,infoW,rowH,u*10);ctx.stroke();
+
+      // Left accent bar
+      const accentG=ctx.createLinearGradient(infoX,ry,infoX,ry+rowH);
+      accentG.addColorStop(0,'#f59e0b');accentG.addColorStop(1,'#9333ea');
+      ctx.fillStyle=accentG;
+      rr(ctx,infoX,ry,u*4,rowH,u*2);ctx.fill();
+
+      // Icon
+      ctx.font=`${u*20}px sans-serif`;ctx.textAlign='left';
+      ctx.fillText(row.icon,infoX+u*14,ry+rowH*0.62);
+
+      // Label
+      ctx.fillStyle='rgba(196,181,253,0.7)';
+      ctx.font=`500 ${u*12}px 'Baloo Da 2',sans-serif`;
+      ctx.fillText(row.label,infoX+u*42,ry+rowH*0.38);
+
+      // Value
+      ctx.fillStyle='#ffffff';
+      ctx.font=`700 ${u*18}px 'Baloo Da 2',sans-serif`;
+      let val=row.val;
+      while(val.length>1&&ctx.measureText(val).width>infoW-u*55) val=val.slice(0,-1)+'…';
+      
+      // Blood group gets special color
+      if(row.label==='রক্তের গ্রুপ'){
+        ctx.fillStyle='#fca5a5';
+        ctx.font=`800 ${u*22}px 'Baloo Da 2',sans-serif`;
+      }
+      // Category gets special color
+      if(row.label==='ক্যাটাগরি'){
+        ctx.fillStyle='#fbbf24';
+        ctx.font=`800 ${u*20}px 'Baloo Da 2',sans-serif`;
+      }
+      // Prize gets special color
+      if(row.label==='ভিত্তিমূল্য'){
+        ctx.fillStyle='#86efac';
+        ctx.font=`800 ${u*20}px 'Baloo Da 2',sans-serif`;
+      }
+      ctx.fillText(val,infoX+u*42,ry+rowH*0.75);
+    });
+
+    // ── BOTTOM FOOTER BAR ─────────────────────────────
+    const ftY=H-u*42;
+    const ftG=ctx.createLinearGradient(0,ftY,W,ftY+u*42);
+    ftG.addColorStop(0,'rgba(251,191,36,0.08)');ftG.addColorStop(1,'rgba(251,191,36,0.04)');
+    ctx.fillStyle=ftG;ctx.fillRect(0,ftY,W,u*42);
+    ctx.strokeStyle='rgba(251,191,36,0.2)';ctx.lineWidth=u;
+    ctx.beginPath();ctx.moveTo(0,ftY);ctx.lineTo(W,ftY);ctx.stroke();
+
+    // ID left
+    ctx.textAlign='left';ctx.fillStyle='rgba(251,191,36,0.7)';
+    ctx.font=`600 ${u*14}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('ID: '+(p.id||''),u*20,ftY+u*27);
+
+    // Registered badge center
+    const regBadgeW=u*140;const regBadgeH=u*26;
+    const regBadgeX=(W-regBadgeW)/2;const regBadgeY=ftY+u*8;
+    const regG=ctx.createLinearGradient(regBadgeX,regBadgeY,regBadgeX+regBadgeW,regBadgeY);
+    regG.addColorStop(0,'#7c3aed');regG.addColorStop(1,'#9333ea');
+    ctx.fillStyle=regG;rr(ctx,regBadgeX,regBadgeY,regBadgeW,regBadgeH,regBadgeH/2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.font=`700 ${u*13}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('✓ নিবন্ধিত',regBadgeX+regBadgeW/2,regBadgeY+regBadgeH*0.72);
+
+    // Powered by right
+    ctx.textAlign='right';ctx.fillStyle='#ffffff';
+    ctx.font=`600 ${u*12}px 'Baloo Da 2',sans-serif`;
+    ctx.fillText('powered by ashikur sourov',W-u*20,ftY+u*27);
+
+    if(store)lastCvs=canvas;
+  };
+
+  img.onload=()=>{
+    // Draw photo clipped to left panel
+    ctx.save();
+    // Clip to photo area with slight diagonal right edge
+    ctx.beginPath();
+    ctx.moveTo(0,0);ctx.lineTo(photoW+u*30,0);
+    ctx.lineTo(photoW+u*10,H);ctx.lineTo(0,H);
+    ctx.closePath();ctx.clip();
+
+    // Scale photo to cover full panel (face-centered: top-aligned)
+    const iw=img.width,ih=img.height;
+    const sc=Math.max(photoW/iw, H/ih);
+    const dw=iw*sc,dh=ih*sc;
+    const dx=(photoW-dw)/2;
+    const dy=0; // top-align so face is visible
+    ctx.drawImage(img,dx,dy,dw,dh);
+
+    // Subtle dark vignette on photo edges
+    const vigL=ctx.createLinearGradient(0,0,photoW*0.35,0);
+    vigL.addColorStop(0,'rgba(2,26,12,0.65)');vigL.addColorStop(1,'transparent');
+    ctx.fillStyle=vigL;ctx.fillRect(0,0,photoW,H);
+
+    const vigB=ctx.createLinearGradient(0,H*0.7,0,H);
+    vigB.addColorStop(0,'transparent');vigB.addColorStop(1,'rgba(2,26,12,0.7)');
+    ctx.fillStyle=vigB;ctx.fillRect(0,0,photoW,H);
+
+    ctx.restore();
+    drawInfo();
+  };
+
+  img.onerror=()=>{
+    // Placeholder if photo fails
+    ctx.save();
+    const pbg2=ctx.createLinearGradient(0,0,photoW,H);
+    pbg2.addColorStop(0,'#1e0a3f');pbg2.addColorStop(1,'#3f2a5f');
+    ctx.fillStyle=pbg2;ctx.fillRect(0,0,photoW,H);
+    ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,0.15)';
+    ctx.font=`${u*80}px sans-serif`;ctx.fillText('📷',photoW/2,H/2+u*30);
+    ctx.restore();
+    drawInfo();
+  };
+
+  img.src=photoSrc;
+}
+
+function rr(c,x,y,w,h,r){
+  c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);
+  c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);
+  c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();
+}
+function wtxt(c,t,x,y,mw,lh){
+  let line='',ly=y;
+  for(const ch of t){if(c.measureText(line+ch).width>mw&&line){c.fillText(line,x,ly);line=ch;ly+=lh;}else line+=ch;}
+  c.fillText(line,x,ly);
+}
+
+// ── DOWNLOAD ──────────────────────────────────────────
+function dlCanvas(){
+  if(!lastCvs){toast('কার্ড তৈরি হয়নি',true);return;}
+  lastCvs.toBlob(blob=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='player_card_'+Date.now()+'.png';
+    a.click();toast('✅ হাই কোয়ালিটি কার্ড ডাউনলোড হয়েছে!');
+  },'image/png',1.0);
+}
+function dlPlayerCard(idx){
+  if(idx===undefined || idx===null) return;
+  const p=allP[idx];
+  if(!p) {toast('প্লেয়ার ডেটা পাওয়া যায়নি',true); return;}
+  
+  toast('⏳ কার্ড তৈরি হচ্ছে...');
+  
+  // Canvas তৈরি করুন (DOM এর সাথে যুক্ত নয়, শুধু মেমরিতে)
+  const canvas = document.createElement('canvas');
+  
+  // 5 সেকেন্ড পরে তৈরি করুন যাতে নিশ্চিত হওয়া যায় যে সব কাজ শেষ হয়েছে
+  setTimeout(() => {
+    try {
+      buildCard(p, canvas, 3200, false);
+      
+      // একটু অপেক্ষা করুন যাতে canvas রেন্ডার হয়
+      setTimeout(() => {
+        canvas.toBlob(blob => {
+          if(!blob) {toast('কার্ড তৈরি ব্যর্থ',true); return;}
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'player_' + (p.id || 'card') + '_' + (p.name || 'unknown').replace(/\s+/g, '_') + '.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          toast('✅ কার্ড ডাউনলোড হয়েছে!');
+        }, 'image/png', 0.95);
+      }, 200);
+    } catch(e) {
+      toast('❌ ত্রুটি: ' + e.message, true);
+      console.error(e);
+    }
+  }, 100);
+}
+
+// ── RESET ─────────────────────────────────────────────
+function resetAll(){
+  picData=null;lastCvs=null;
+  const b=document.getElementById('pbox');
+  b.innerHTML=`<div class="phi">📷</div><div class="pht">ছবি আপলোড করুন<br><small style="opacity:.6">ক্লিক করে ছবি সিলেক্ট করুন</small></div>`;
+  b.onclick=()=>document.getElementById('fi').click();
+  ['fn','fv','fph'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fbl').value='';
+  document.getElementById('fps').value='যেকোনো';
+  document.getElementById('fcp').checked=true;
+  document.getElementById('fag').checked=false;
+  document.getElementById('fi').value='';
+  document.getElementById('subBtn').disabled=false;
+  document.getElementById('subBtn').textContent='💳 পেমেন্ট করুন ও রেজিস্ট্রেশন করুন';
+  goPage('reg');
+}
+
+// ── ADMIN AUTH ────────────────────────────────────────
+async function doLogin(){
+  const entered=document.getElementById('apass').value;
+  const h=await hashPass(entered);
+  if(h===PASS_HASH){
+    document.getElementById('alog').style.display='none';
+    document.getElementById('apanel').style.display='block';
+    loadPlayers();
+    loadPrizes();
+    loadPaymentNums();
+  } else {
+    document.getElementById('epass').classList.add('sh');
+    document.getElementById('apass').classList.add('er');
+    toast('❌ ভুল পাসওয়ার্ড',true);
+  }
+}
+function doLogout(){
+  document.getElementById('alog').style.display='block';
+  document.getElementById('apanel').style.display='none';
+  document.getElementById('apass').value='';
+  document.getElementById('epass').classList.remove('sh');
+  document.getElementById('apass').classList.remove('er');
+}
+
+// ── LOAD FROM FIRESTORE ───────────────────────────────
+async function loadPlayers(){
+  document.getElementById('plist').innerHTML=`<div class="loading"><div class="spinner"></div><br>Firebase থেকে লোড হচ্ছে...</div>`;
+  try{
+    const snap=await db.collection('players').orderBy('ts','desc').get();
+    allP=snap.docs.map(d=>({docId:d.id,...d.data()}));
+    renderList();
+    renderAnalytics();renderAdminAnalytics();
+    updateBulkCount();
+    checkDeadlineAndSeat();
+    // update stats
+    const stot=document.getElementById('stot');const spending=document.getElementById('spending');const sapproved=document.getElementById('sapproved');
+    if(stot)stot.textContent=allP.length;
+    if(spending)spending.textContent=allP.filter(p=>p.status==='pending'||!p.status).length;
+    if(sapproved)sapproved.textContent=allP.filter(p=>p.status==='approved').length;
+  }catch(err){
+    document.getElementById('plist').innerHTML=`<div class="empty">❌ লোড ব্যর্থ: ${err.message}</div>`;
+  }
+}
+
+// ── PRIZE MANAGEMENT ──────────────────────────────────
+function loadPrizes(){
+  const saved=localStorage.getItem('categoryPrizes');
+  if(saved){
+    categoryPrizes=JSON.parse(saved);
+  }
+  // ইনপুট ফিল্ডে লোড করুন
+  document.getElementById('prizeA').value=categoryPrizes.A||'';
+  document.getElementById('prizeB').value=categoryPrizes.B||'';
+  document.getElementById('prizeC').value=categoryPrizes.C||'';
+  document.getElementById('prizeD').value=categoryPrizes.D||'';
+}
+
+// প্রাইজ ফরম্যাট করার ফাংশন (লাখ/কোটি এ রূপান্তর)
+function formatPrize(value){
+  if(!value||value==='—') return '—';
+  const num=parseInt(value);
+  if(isNaN(num)) return value;
+  
+  if(num>=10000000){ // কোটি
+    const cr=Math.floor(num/10000000);
+    const remainder=(num%10000000)/1000000;
+    if(remainder>0){
+      return (cr+remainder).toFixed(1)+'Cr';
+    }
+    return cr+'Cr';
+  } else if(num>=100000){ // লাখ
+    const lac=Math.floor(num/100000);
+    const remainder=(num%100000)/100000;
+    if(remainder>0){
+      return (lac+remainder).toFixed(1)+'L';
+    }
+    return lac+'L';
+  }
+  return num+'';
+}
+
+function savePrizes(){
+  categoryPrizes.A=document.getElementById('prizeA').value;
+  categoryPrizes.B=document.getElementById('prizeB').value;
+  categoryPrizes.C=document.getElementById('prizeC').value;
+  categoryPrizes.D=document.getElementById('prizeD').value;
+  
+  localStorage.setItem('categoryPrizes',JSON.stringify(categoryPrizes));
+  toast('✅ মূল্য সংরক্ষিত হয়েছে!');
+  
+  // কার্ড প্রিভিউ আপডেট করার জন্য
+  if(allP.length>0) renderList();
+}
+
+// ── CATEGORY FILTER ───────────────────────────────────
+function setCatFilter(v){
+  catFilter=v;
+  document.querySelectorAll('.cat-tab').forEach(el=>el.classList.remove('on'));
+  const map={'':'ctf-all','none':'ctf-none','A':'ctf-a','B':'ctf-b','C':'ctf-c','D':'ctf-d'};
+  const el=document.getElementById(map[v]);
+  if(el) el.classList.add('on');
+  renderList();
+}
+
+// ── RENDER LIST ───────────────────────────────────────
+function renderList(){
+  const q=(document.getElementById('sq')||{}).value||'';
+  let fil=allP.filter(p=>
+    (p.name||'').includes(q)||(p.village||'').includes(q)||(p.phone||'').includes(q)
+  );
+  if(catFilter==='none') fil=fil.filter(p=>!p.category);
+  else if(catFilter) fil=fil.filter(p=>p.category===catFilter);
+
+  const pendingCount=allP.filter(p=>p.status==='pending'||!p.status).length;
+  const approvedCount=allP.filter(p=>p.status==='approved').length;
+  document.getElementById('stot').textContent=allP.length;
+  document.getElementById('spending').textContent=pendingCount;
+  document.getElementById('sapproved').textContent=approvedCount;
+  document.getElementById('lcnt').textContent=`(${fil.length} জন)`;
+
+  // Render pending list
+  renderPendingList();
+
+  const ul=document.getElementById('plist');
+  if(!fil.length){ul.innerHTML=`<div class="empty">${allP.length?'কিছু পাওয়া যায়নি':'কোনো রেজিস্ট্রেশন নেই'}</div>`;return;}
+  ul.innerHTML=fil.map((p,idx)=>{
+    const ri=allP.indexOf(p);
+    const cc=p.category?`cbadge c${p.category.toLowerCase()}`:'cbadge cn';
+    const ct=p.category?`গ্রুপ ${p.category}`:'ক্যাটাগরি নেই';
+    const delay=(idx*0.06).toFixed(2);
+    const statusBadge=p.status==='approved'?'<span class="badge-approved">✅ অ্যাপ্রুভড</span>':p.status==='rejected'?'<span class="badge-rejected">❌ রিজেক্টেড</span>':'<span class="badge-pending">⏳ পেন্ডিং</span>';
+    const txnHtml=p.txnId?`<div class="txn-info">💳 TrxID: ${p.txnId}</div>`:'';
+    return `<div class="pi" style="animation-delay:${delay}s">
+      <img class="pi-av" src="${p.photo||p.photoBase64||p.photoURL||''}" alt="" onerror="this.style.opacity='.2'">
+      <div class="pi-inf">
+        <div class="pi-nm">${p.name||''}</div>
+        <div class="pi-mt">${p.village||''} • ${p.blood||''} • ${p.position||''}</div>
+        <div class="pi-mt">${p.phone||''} • ${p.date||''}</div>
+        ${p.jerseyName?`<div class="pi-mt">👕 ${p.jerseyName} • #${p.jerseyNumber||'—'}</div>`:''}
+        <div class="pi-id">${p.id||''}</div>
+        ${txnHtml}
+        <div class="pi-cat"><span class="${cc}">${ct}</span> ${statusBadge}</div>
+      </div>
+      <div class="pi-ac">
+        ${(p.status!=='approved')?`<button class="pab approve" onclick="approvePlayer('${p.docId}')">✅ অ্যাপ্রুভ</button>`:''}
+        ${(p.status!=='rejected'&&p.status!=='approved')?`<button class="pab reject-btn" onclick="rejectPlayer('${p.docId}')">❌ রিজেক্ট</button>`:''}
+        <button class="pab" onclick="openCat('${p.docId}','${p.category||''}')">📂 ক্যাটাগরি</button>
+        <button class="pab" style="color:#a78bfa;border-color:rgba(167,139,250,.2)" onclick="openEdit(${ri})">✏️ এডিট</button>
+        <button class="pab dl" onclick="dlPlayerCard(${ri})">📥 কার্ড</button>
+        <button class="pab rm" onclick="delP('${p.docId}')">🗑️ মুছুন</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── BULK ZIP DOWNLOAD ALL CARDS ───────────────────────
+async function dlAllCards(){
+  if(!allP.length){toast('কোনো প্লেয়ার নেই',true);return;}
+  if(!confirm(`সকল ${allP.length} জন প্লেয়ারের কার্ড ZIP ফাইলে ডাউনলোড হবে। চালিয়ে যাবেন?`)) return;
+  await buildZip(allP,'সব_প্লেয়ার_কার্ড');
+}
+
+// ── BULK ZIP BY CATEGORY ──────────────────────────────
+async function dlCardsByCat(){
+  if(!allP.length){toast('কোনো প্লেয়ার নেই',true);return;}
+  if(!confirm('প্রতিটি ক্যাটাগরির জন্য আলাদা ZIP ডাউনলোড হবে। চালিয়ে যাবেন?')) return;
+  const cats=['A','B','C','D',''];
+  const labels={A:'গ্রুপ_A',B:'গ্রুপ_B',C:'গ্রুপ_C',D:'গ্রুপ_D','':'ক্যাটাগরি_নেই'};
+  for(const cat of cats){
+    const group=allP.filter(p=>(p.category||'')===(cat));
+    if(group.length>0){
+      await buildZip(group, labels[cat]);
+      await delay(600);
+    }
+  }
+}
+
+// ── ZIP BUILDER (HIGH QUALITY 2400px) ─────────────────
+async function buildZip(list, zipName){
+  const prog=document.getElementById('dlProg');
+  const fill=document.getElementById('dlProgFill');
+  const txt=document.getElementById('dlProgTxt');
+  prog.style.display='block';
+  txt.textContent='ZIP প্রস্তুত হচ্ছে...';
+  fill.style.width='2%';
+
+  const zip=new JSZip();
+  const folder=zip.folder(zipName);
+
+  for(let i=0;i<list.length;i++){
+    const p=list[i];
+    const serial=String(i+1).padStart(3,'0');
+    const safeName=(p.name||'player').replace(/[^\u0980-\u09FFa-zA-Z0-9]/g,'_');
+    const fname=`${serial}_${safeName}_${p.id}.png`;
+    txt.textContent=`কার্ড তৈরি হচ্ছে: ${p.name} (${i+1}/${list.length})`;
+    fill.style.width=((i+0.5)/list.length*90+2)+'%';
+
+    // HIGH QUALITY: 2400×1320 (300 DPI equivalent)
+    const blob=await new Promise(res=>{
+      const c=document.createElement('canvas');
+      buildCard(p,c,2400,false);
+      setTimeout(()=>{
+        c.toBlob(b=>res(b),'image/png',1.0);
+      },900);
+    });
+    if(blob) folder.file(fname, blob);
+    await delay(100);
+  }
+
+  txt.textContent='ZIP ফাইল তৈরি হচ্ছে...';
+  fill.style.width='95%';
+
+  const zipBlob=await zip.generateAsync({
+    type:'blob',
+    compression:'DEFLATE',
+    compressionOptions:{level:6}
+  },meta=>{
+    fill.style.width=(95+meta.percent*0.05)+'%';
+  });
+
+  fill.style.width='100%';
+  txt.textContent='✅ ডাউনলোড শুরু হচ্ছে...';
+
+  const url=URL.createObjectURL(zipBlob);
+  const a=document.createElement('a');
+  a.href=url; a.download=zipName+'.zip'; a.click();
+  URL.revokeObjectURL(url);
+
+  setTimeout(()=>{
+    prog.style.display='none';
+    fill.style.width='0%';
+  },1200);
+  toast(`✅ ${list.length}টি কার্ড ZIP-এ ডাউনলোড হয়েছে!`);
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ── THEME PRESETS ─────────────────────────────────────
+const PRESETS={
+  green: {c1:'#4c1d95',c2:'#9333ea',c3:'#f59e0b',bg:'#071810',surf:'#2d1b4e',surf2:'#1a0f2e'},
+  blue:  {c1:'#1e3a5f',c2:'#2563eb',c3:'#fbbf24',bg:'#071222',surf:'#0d1e3a',surf2:'#081228'},
+  purple:{c1:'#4a1942',c2:'#9333ea',c3:'#f0abfc',bg:'#140d1e',surf:'#1e0d2b',surf2:'#120818'},
+  red:   {c1:'#7c1d1d',c2:'#dc2626',c3:'#fbbf24',bg:'#1a0707',surf:'#2b0d0d',surf2:'#1f0808'},
+  teal:  {c1:'#1c3a3a',c2:'#0d9488',c3:'#f59e0b',bg:'#071212',surf:'#0d2b2b',surf2:'#081a1a'},
+  darkrose:{c1:'#1a1a2e',c2:'#e11d48',c3:'#fb7185',bg:'#0d0d1a',surf:'#1a1a2e',surf2:'#0f0f1f'},
+  amber: {c1:'#78350f',c2:'#d97706',c3:'#fef08a',bg:'#1a0e00',surf:'#2b1a07',surf2:'#1a1005'},
+  sky:   {c1:'#0f172a',c2:'#0284c7',c3:'#38bdf8',bg:'#060d18',surf:'#0d1e2b',surf2:'#081218'},
+  dark:  {c1:'#111827',c2:'#374151',c3:'#9ca3af',bg:'#030712',surf:'#111827',surf2:'#0b1120'},
+  tri:   {c1:'#3f2a5f',c2:'#9333ea',c3:'#fbbf24',bg:'#071810',surf:'#2d1b4e',surf2:'#1a0f2e'},
+};
+
+function applyPreset(name){
+  const p=PRESETS[name]; if(!p) return;
+  applyTheme(p.c1,p.c2,p.c3,p.bg,p.surf,p.surf2);
+  document.getElementById('cp1').value=p.c1;
+  document.getElementById('cp2').value=p.c2;
+  document.getElementById('cp3').value=p.c3;
+  // highlight active swatch
+  const keys=Object.keys(PRESETS);
+  document.querySelectorAll('.theme-swatch').forEach((el,i)=>{
+    el.classList.toggle('on', keys[i]===name);
+  });
+  toast('✅ থিম পরিবর্তন হয়েছে!');
+}
+
+function applyCustom(){
+  const c1=document.getElementById('cp1').value;
+  const c2=document.getElementById('cp2').value;
+  const c3=document.getElementById('cp3').value;
+  // derive bg/surf from c1
+  applyTheme(c1,c2,c3,
+    shadeHex(c1,0.35), shadeHex(c1,0.6), shadeHex(c1,0.75)
+  );
+  document.querySelectorAll('.theme-swatch').forEach(el=>el.classList.remove('on'));
+}
+
+function applyTheme(c1,c2,c3,bg,surf,surf2){
+  const r=document.documentElement;
+  r.style.setProperty('--c1',c1);
+  r.style.setProperty('--c2',c2);
+  r.style.setProperty('--c3',c3);
+  r.style.setProperty('--bg',bg);
+  r.style.setProperty('--surf',surf);
+  r.style.setProperty('--surf2',surf2);
+  // update border color derived from c2
+  r.style.setProperty('--border',hexToRgba(c2,0.28));
+}
+
+function shadeHex(hex,factor){
+  let r=parseInt(hex.slice(1,3),16);
+  let g=parseInt(hex.slice(3,5),16);
+  let b=parseInt(hex.slice(5,7),16);
+  r=Math.round(r*factor); g=Math.round(g*factor); b=Math.round(b*factor);
+  return '#'+[r,g,b].map(v=>Math.min(255,v).toString(16).padStart(2,'0')).join('');
+}
+
+function hexToRgba(hex,a){
+  const r=parseInt(hex.slice(1,3),16);
+  const g=parseInt(hex.slice(3,5),16);
+  const b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function resetTheme(){
+  applyPreset('green');
+  toast('↩️ ডিফল্ট থিমে ফেরত এসেছে');
+}
+
+// ── DELETE ALL ────────────────────────────────────────
+async function delAll(){
+  if(!allP.length){toast('কোনো ডেটা নেই',true);return;}
+  const confirm1=confirm(`⚠️ সতর্কতা!\n\nসকল ${allP.length} জন প্লেয়ারের সব ডেটা স্থায়ীভাবে মুছে যাবে!\n\n"ঠিক আছে" চাপলে মুছে যাবে।`);
+  if(!confirm1) return;
+  const confirm2=confirm(`🔴 শেষবারের মতো নিশ্চিত করুন:\n\nসত্যিই সব ${allP.length}টি রেকর্ড মুছবেন?`);
+  if(!confirm2) return;
+  toast('⏳ মুছে দেওয়া হচ্ছে...');
+  try{
+    const batch=db.batch();
+    allP.forEach(p=>{ if(p.docId) batch.delete(db.collection('players').doc(p.docId)); });
+    await batch.commit();
+    allP=[];
+    renderList();
+    toast('✅ সব ডেটা মুছে দেওয়া হয়েছে');
+  }catch(e){toast('❌ ত্রুটি: '+e.message,true);}
+}
+
+// ── DELETE BY CATEGORY ────────────────────────────────
+function delByCat(){
+  document.getElementById('delcatov').classList.add('op');
+}
+function closeDelCat(){
+  document.getElementById('delcatov').classList.remove('op');
+}
+async function confirmDelByCat(){
+  const cat=document.getElementById('delcatsel').value;
+  const targets=allP.filter(p=>(p.category||'')===cat);
+  if(!targets.length){toast('এই ক্যাটাগরিতে কোনো প্লেয়ার নেই',true);closeDelCat();return;}
+  const label=cat?`গ্রুপ ${cat}`:'ক্যাটাগরি নেই';
+  if(!confirm(`"${label}" ক্যাটাগরির ${targets.length} জন প্লেয়ার মুছবেন?`)){closeDelCat();return;}
+  closeDelCat();
+  try{
+    const batch=db.batch();
+    targets.forEach(p=>{ if(p.docId) batch.delete(db.collection('players').doc(p.docId)); });
+    await batch.commit();
+    allP=allP.filter(p=>!targets.includes(p));
+    renderList();
+    toast(`✅ ${targets.length}টি রেকর্ড মুছে দেওয়া হয়েছে`);
+  }catch(e){toast('❌ ত্রুটি: '+e.message,true);}
+}
+document.getElementById('delcatov').addEventListener('click',e=>{
+  if(e.target===document.getElementById('delcatov')) closeDelCat();
+});
+
+// ── CATEGORY ──────────────────────────────────────────
+function openCat(docId,cur){
+  editDocId=docId;
+  document.getElementById('catsel').value=cur||'';
+  document.getElementById('catov').classList.add('op');
+}
+function closeCat(){document.getElementById('catov').classList.remove('op');editDocId=null;}
+async function saveCat(){
+  const cat=document.getElementById('catsel').value;
+  try{
+    await db.collection('players').doc(editDocId).update({category:cat});
+    const p=allP.find(x=>x.docId===editDocId);if(p)p.category=cat;
+    renderList();toast('✅ ক্যাটাগরি আপডেট হয়েছে');
+  }catch(e){toast('❌ আপডেট ব্যর্থ: '+e.message,true);}
+  closeCat();
+}
+document.getElementById('catov').addEventListener('click',e=>{
+  if(e.target===document.getElementById('catov'))closeCat();
+});
+
+// ── ADMIN EDIT ────────────────────────────────────────
+let editIdx=null;
+let editNewPhoto=null;
+let editCroppedPhoto=null;
+let cropImg=null,cropOffX=0,cropOffY=0,cropScale=1,cropDragging=false,cropLastX=0,cropLastY=0;
+
+function openEdit(idx){
+  editIdx=idx;editNewPhoto=null;editCroppedPhoto=null;
+  const p=allP[idx];if(!p)return;
+  document.getElementById('ed-name').value=p.name||'';
+  document.getElementById('ed-village').value=p.village||'';
+  document.getElementById('ed-phone').value=p.phone||'';
+  document.getElementById('ed-jname').value=p.jerseyName||'';
+  document.getElementById('ed-jnum').value=p.jerseyNumber||'';
+  document.getElementById('ed-blood').value=p.blood||'';
+  document.getElementById('ed-pos').value=p.position||'যেকোনো';
+  const prev=document.getElementById('ed-photo-prev');
+  prev.src=p.processedPhoto||p.photo||'';
+  prev.style.display=p.processedPhoto||p.photo?'block':'none';
+  document.getElementById('editov').classList.add('op');
+}
+function closeEdit(){document.getElementById('editov').classList.remove('op');editIdx=null;editNewPhoto=null;}
+
+function editPickPhoto(){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';
+  inp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      const img2=new Image();
+      img2.onload=()=>{
+        // Smart resize: max 2000px, JPEG 0.95 near-lossless
+        const cc=document.createElement('canvas');
+        const M=2000;let w=img2.width,h=img2.height;
+        if(w>h){if(w>M){h=Math.round(h*M/w);w=M;}}else{if(h>M){w=Math.round(w*M/h);h=M;}}
+        cc.width=w;cc.height=h;
+        const ctx3=cc.getContext('2d');
+        ctx3.imageSmoothingEnabled=true;ctx3.imageSmoothingQuality='high';
+        ctx3.drawImage(img2,0,0,w,h);
+        const raw=cc.toDataURL('image/jpeg',0.95);
+        editNewPhoto={raw,proc:raw};
+        const prev=document.getElementById('ed-photo-prev');
+        prev.src=raw;prev.style.display='block';
+        document.getElementById('cropBtn').style.display='inline-block';
+        toast('✅ ছবি লোড হয়েছে — ✂️ ক্রপ বাটন চাপুন');
+      };
+      img2.src=ev.target.result;
+    };
+    r.readAsDataURL(f);
+  };
+  inp.click();
+}
+
+async function saveEdit(){
+  const p=allP[editIdx];if(!p)return;
+  const nm=document.getElementById('ed-name').value.trim();
+  const ph=document.getElementById('ed-phone').value.trim();
+  if(!nm||!ph){toast('নাম ও ফোন নম্বর আবশ্যক',true);return;}
+
+  // Duplicate check (in-memory, skip own record)
+  const allSnap2=await db.collection('players').get();
+  const others=allSnap2.docs.filter(d=>d.id!==p.docId).map(d=>d.data());
+  const nameConflict=others.some(x=>(x.name||'').trim()===nm);
+  const phoneConflict=others.some(x=>(x.phone||'').trim()===ph);
+  if(nameConflict){toast('❌ এই নামে অন্য রেজিস্ট্রেশন আছে!',true);return;}
+  if(phoneConflict){toast('❌ এই নম্বরে অন্য রেজিস্ট্রেশন আছে!',true);return;}
+
+  const upd={
+    name:nm,
+    village:document.getElementById('ed-village').value.trim(),
+    phone:ph,
+    blood:document.getElementById('ed-blood').value,
+    position:document.getElementById('ed-pos').value,
+    jerseyName:document.getElementById('ed-jname').value.trim().toUpperCase(),
+    jerseyNumber:document.getElementById('ed-jnum').value.trim(),
+  };
+  if(editNewPhoto||editCroppedPhoto){
+    const uploadSrc=editCroppedPhoto||editNewPhoto.raw;
+    try{
+      const newURL=await uploadToImgBB(uploadSrc);
+      upd.photoURL=newURL;upd.photo=newURL;upd.croppedPhoto=editCroppedPhoto||'';
+    }catch(ue){toast('⚠ ছবি আপলোড ব্যর্থ: '+ue.message,true);}
+  }
+  try{
+    await db.collection('players').doc(p.docId).update(upd);
+    Object.assign(allP[editIdx],upd);
+    renderList();
+    toast('✅ তথ্য আপডেট হয়েছে!');
+    closeEdit();
+  }catch(e){toast('❌ আপডেট ব্যর্থ: '+e.message,true);}
+}
+
+document.getElementById('editov').addEventListener('click',e=>{
+  if(e.target===document.getElementById('editov'))closeEdit();
+});
+
+// ── CROP TOOL ──────────────────────────────────────────
+let _cropRawSrc='', _cropW=0, _cropH=0;
+
+function openCropTool(){
+  if(!editNewPhoto){toast('আগে ছবি দিন',true);return;}
+  _cropRawSrc=editNewPhoto.raw;
+  cropScale=1; cropOffX=0; cropOffY=0;
+  document.getElementById('cropZoom').value=100;
+  document.getElementById('cropov').classList.add('op');
+
+  const box=document.getElementById('cropBox');
+  _cropW=box.offsetWidth; _cropH=box.offsetHeight;
+  const cv=document.getElementById('cropCvs');
+  cv.width=_cropW; cv.height=_cropH;
+  cropImg=new Image();
+  cropImg.onload=()=>{
+    // initial scale: fit image inside box
+    const sc=Math.min(_cropW/cropImg.width, _cropH/cropImg.height)*1.05;
+    cropScale=sc;
+    cropOffX=(_cropW-cropImg.width*cropScale)/2;
+    cropOffY=(_cropH-cropImg.height*cropScale)/2;
+    drawCrop();
+  };
+  cropImg.src=_cropRawSrc;
+
+  // Mouse events
+  const cv2=document.getElementById('cropCvs');
+  cv2.onmousedown=e=>{cropDragging=true;cropLastX=e.clientX;cropLastY=e.clientY;e.preventDefault();};
+  cv2.onmousemove=e=>{
+    if(!cropDragging)return;
+    cropOffX+=e.clientX-cropLastX; cropOffY+=e.clientY-cropLastY;
+    cropLastX=e.clientX; cropLastY=e.clientY;
+    drawCrop();
+  };
+  cv2.onmouseup=cv2.onmouseleave=()=>{cropDragging=false;};
+  cv2.onwheel=e=>{
+    e.preventDefault();
+    const delta=e.deltaY>0?-0.05:0.05;
+    const newScale=Math.max(0.3,Math.min(5,cropScale+delta));
+    // zoom toward cursor
+    const rect=cv2.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    cropOffX=mx-(mx-cropOffX)*(newScale/cropScale);
+    cropOffY=my-(my-cropOffY)*(newScale/cropScale);
+    cropScale=newScale;
+    document.getElementById('cropZoom').value=Math.round(cropScale*100);
+    drawCrop();
+  };
+  // Touch events
+  let lastTouchDist=0;
+  cv2.ontouchstart=e=>{
+    if(e.touches.length===1){cropDragging=true;cropLastX=e.touches[0].clientX;cropLastY=e.touches[0].clientY;}
+    if(e.touches.length===2){lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+    e.preventDefault();
+  };
+  cv2.ontouchmove=e=>{
+    if(e.touches.length===1&&cropDragging){
+      cropOffX+=e.touches[0].clientX-cropLastX; cropOffY+=e.touches[0].clientY-cropLastY;
+      cropLastX=e.touches[0].clientX; cropLastY=e.touches[0].clientY; drawCrop();
+    }
+    if(e.touches.length===2){
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const newScale=Math.max(0.3,Math.min(5,cropScale*(d/lastTouchDist)));
+      cropScale=newScale; lastTouchDist=d;
+      document.getElementById('cropZoom').value=Math.round(cropScale*100);
+      drawCrop();
+    }
+    e.preventDefault();
+  };
+  cv2.ontouchend=()=>{cropDragging=false;};
+}
+
+function onZoomSlider(){
+  cropScale=parseInt(document.getElementById('cropZoom').value)/100;
+  drawCrop();
+}
+
+function drawCrop(){
+  const cv=document.getElementById('cropCvs');
+  if(!cv||!cropImg)return;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(cropImg,cropOffX,cropOffY,cropImg.width*cropScale,cropImg.height*cropScale);
+}
+
+function closeCropTool(){
+  document.getElementById('cropov').classList.remove('op');
+}
+
+function applyCrop(){
+  // Render at HIGH RES (5x the display size for sharpness)
+  const SCALE=5;
+  const outW=_cropW*SCALE, outH=_cropH*SCALE;
+  const out=document.createElement('canvas');
+  out.width=outW; out.height=outH;
+  const ctx=out.getContext('2d');
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  ctx.fillStyle='#000';ctx.fillRect(0,0,outW,outH);
+  ctx.drawImage(cropImg,
+    cropOffX*SCALE, cropOffY*SCALE,
+    cropImg.width*cropScale*SCALE, cropImg.height*cropScale*SCALE
+  );
+  editCroppedPhoto=out.toDataURL('image/png'); // lossless PNG
+
+  // Update preview in edit modal
+  const prev=document.getElementById('ed-photo-prev');
+  prev.src=editCroppedPhoto;
+  closeCropTool();
+  toast('✅ ক্রপ হয়েছে — সেভ করলে আপডেট হবে');
+}
+
+document.getElementById('cropov').addEventListener('click',e=>{
+  if(e.target===document.getElementById('cropov'))closeCropTool();
+});
+
+// ── DELETE ────────────────────────────────────────────
+async function delP(docId){
+  if(!confirm('এই প্লেয়ারকে মুছে দেবেন?'))return;
+  try{
+    await db.collection('players').doc(docId).delete();
+    allP=allP.filter(p=>p.docId!==docId);
+    renderList();toast('🗑️ মুছে দেওয়া হয়েছে');
+  }catch(e){toast('❌ মুছতে ব্যর্থ: '+e.message,true);}
+}
+
+// ── EXPORT ────────────────────────────────────────────
+function expCSV(){
+  if(!allP.length){toast('কোনো ডেটা নেই',true);return;}
+  const h=['আইডি','নাম','গ্রাম','ফোন','ব্লাড','পজিশন','ক্যাটাগরি','তারিখ','জার্সির নাম','জার্সি নাম্বার'];
+  const rows=allP.map(p=>[p.id,p.name,p.village,p.phone,p.blood,p.position,p.category||'নেই',p.date,p.jerseyName,p.jerseyNumber]);
+  dl('\uFEFF'+[h,...rows].map(r=>r.map(c=>'"'+(c||'')+'"').join(',')).join('\n'),'players.csv','text/csv');
+  toast('✅ CSV ডাউনলোড হয়েছে');
+}
+function expTXT(){
+  if(!allP.length){toast('কোনো ডেটা নেই',true);return;}
+  const lines=allP.map((p,i)=>`${i+1}. ${p.name}\n   গ্রাম: ${p.village} | ফোন: ${p.phone} | রক্ত: ${p.blood} | পজিশন: ${p.position} | ক্যাটাগরি: ${p.category||'নেই'} | জার্সি: ${p.jerseyName||'—'} #${p.jerseyNumber||'—'} | ID: ${p.id}`).join('\n\n');
+  dl(`স্বপ্ন সারথি যুব সংঘ - ফুটবল টুর্নামেন্ট ২০২৬\nমোট প্লেয়ার: ${allP.length}\n\n${lines}`,'players.txt','text/plain');
+  toast('✅ TXT ডাউনলোড হয়েছে');
+}
+function dl(content,name,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name;a.click();
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg,err=false){
+  const t=document.getElementById('tst');
+  t.textContent=msg;t.className='toast sh'+(err?' er':'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('sh'),3500);
+}
+
+// ══════════════════════════════════════════
+// ADVANCED FEATURES
+// ══════════════════════════════════════════
+
+// ── DARK MODE ─────────────────────────────
+function toggleDark(){
+  const on=document.body.classList.toggle('dark');
+  document.getElementById('darkBtn').textContent=on?'☀️':'🌙';
+  localStorage.setItem('darkMode',on?'1':'');
+}
+(function(){
+  if(localStorage.getItem('darkMode')==='1'){
+    document.body.classList.add('dark');
+    const btn=document.getElementById('darkBtn');
+    if(btn)btn.textContent='☀️';
+  }
+})();
+
+// ── CONFETTI ──────────────────────────────
+function launchConfetti(){
+  const colors=['#7c3aed','#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#fbbf24'];
+  for(let i=0;i<80;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;`;
+    document.body.appendChild(el);
+    el.addEventListener('animationend',()=>el.remove());
+  }
+}
+
+// ── STATUS CHECK ──────────────────────────
+async function checkStatus(){
+  const ph=document.getElementById('stPhone').value.trim();
+  if(!/^01\d{9}$/.test(ph)){toast('⚠ সঠিক মোবাইল নম্বর দিন',true);return;}
+  const el=document.getElementById('statusResult');
+  el.style.display='block';
+  el.innerHTML='<div style="text-align:center;color:#7c3aed;padding:10px">🔍 খোঁজা হচ্ছে...</div>';
+  try{
+    const snap=await db.collection('players').where('phone','==',ph).limit(1).get();
+    if(snap.empty){el.innerHTML='<div class="status-result status-notfound">❌ এই নম্বরে কোনো রেজিস্ট্রেশন পাওয়া যায়নি।</div>';return;}
+    const p=snap.docs[0].data();
+    const statusMap={
+      pending:`<div class="status-result status-pending">⏳ <strong>পেন্ডিং</strong><br>নাম: ${p.name||'—'} | ID: ${p.id||'—'}<br>পেমেন্ট যাচাই হলে এডমিন অনুমোদন দেবে।</div>`,
+      approved:`<div class="status-result status-approved">✅ <strong>অনুমোদিত!</strong><br>নাম: ${p.name||'—'} | ID: ${p.id||'—'}<br>গ্রাম: ${p.village||'—'} | পজিশন: ${p.position||'—'}<br><br>কার্ড ডাউনলোড করতে রেজিস্ট্রেশন পেজে যান।</div>`,
+      rejected:`<div class="status-result status-rejected">❌ <strong>রিজেক্টেড</strong><br>নাম: ${p.name||'—'}<br>বিস্তারিত জানতে এডমিনের সাথে যোগাযোগ করুন।</div>`
+    };
+    el.innerHTML=statusMap[p.status||'pending']||statusMap.pending;
+  }catch(e){el.innerHTML='<div class="status-result status-notfound">❌ ত্রুটি: '+e.message+'</div>';}
+}
+
+// ── ANALYTICS ─────────────────────────────
+function renderAnalytics(){
+  if(!allP||!allP.length)return;
+  const approved=allP.filter(p=>p.status==='approved');
+  const pending=allP.filter(p=>p.status==='pending'||!p.status);
+  const rejected=allP.filter(p=>p.status==='rejected');
+  const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setTxt('anTot',allP.length);setTxt('anAppr',approved.length);
+  setTxt('anPend',pending.length);setTxt('anRej',rejected.length);
+}
+
+// ── ADMIN ANALYTICS ───────────────────────────────────
+function renderAdminAnalytics(){
+  if(!allP||!allP.length){
+    ['admVillageChart','admDayChart'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.innerHTML='<div style="text-align:center;color:#c4b5fd;font-size:.8rem;padding:10px">কোনো ডেটা নেই</div>';
+    });
+    return;
+  }
+
+  // Village chart (admin)
+  const vMap={};
+  allP.forEach(p=>{const v=(p.village||'অজানা').trim();vMap[v]=(vMap[v]||0)+1;});
+  const vSorted=Object.entries(vMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxV=Math.max(...vSorted.map(x=>x[1]),1);
+  const vEl=document.getElementById('admVillageChart');
+  if(vEl)vEl.innerHTML=vSorted.length?vSorted.map(([nm,cnt],i)=>`
+    <div class="chart-bar-row">
+      <div class="chart-bar-lbl">${nm}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${(cnt/maxV*100).toFixed(1)}%;background:linear-gradient(90deg,#7c3aed,#a78bfa)">
+        <span class="chart-bar-val">${cnt}</span>
+      </div></div>
+    </div>`).join(''):'<div style="text-align:center;color:#c4b5fd;padding:10px">কোনো ডেটা নেই</div>';
+
+  // Blood donut (admin)
+  const bMap={};
+  allP.forEach(p=>{const b=p.blood||'অজানা';bMap[b]=(bMap[b]||0)+1;});
+  const bColors=['#7c3aed','#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#14b8a6','#f97316'];
+  const bEntries=Object.entries(bMap);
+  const cvs=document.getElementById('admBloodDonut');
+  if(cvs&&bEntries.length){
+    const ctx=cvs.getContext('2d');
+    const total=bEntries.reduce((s,[,v])=>s+v,0);
+    let angle=-Math.PI/2;
+    ctx.clearRect(0,0,200,200);
+    bEntries.forEach(([,cnt],i)=>{
+      const slice=(cnt/total)*Math.PI*2;
+      ctx.beginPath();ctx.moveTo(100,100);ctx.arc(100,100,80,angle,angle+slice);
+      ctx.closePath();ctx.fillStyle=bColors[i%bColors.length];ctx.fill();angle+=slice;
+    });
+    ctx.beginPath();ctx.arc(100,100,50,0,Math.PI*2);
+    ctx.fillStyle=document.body.classList.contains('dark')?'rgba(20,10,35,0.9)':'rgba(240,232,255,0.9)';ctx.fill();
+    ctx.fillStyle='#7c3aed';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(total+'জন',100,100);
+    const leg=document.getElementById('admBloodLegend');
+    if(leg)leg.innerHTML=bEntries.map(([nm,cnt],i)=>`
+      <div class="chart-legend-item">
+        <div class="chart-legend-dot" style="background:${bColors[i%bColors.length]}"></div>
+        ${nm}: <strong>${cnt}</strong>
+      </div>`).join('');
+  }
+
+  // Day chart (admin)
+  const dMap={};
+  allP.forEach(p=>{const d=p.date||'অজানা';dMap[d]=(dMap[d]||0)+1;});
+  const dSorted=Object.entries(dMap).sort((a,b)=>a[0].localeCompare(b[0])).slice(-10);
+  const maxD=Math.max(...dSorted.map(x=>x[1]),1);
+  const dEl=document.getElementById('admDayChart');
+  if(dEl)dEl.innerHTML=dSorted.length?dSorted.map(([dt,cnt])=>`
+    <div class="chart-bar-row">
+      <div class="chart-bar-lbl" style="font-size:.63rem">${dt}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${(cnt/maxD*100).toFixed(1)}%;background:linear-gradient(90deg,#f59e0b,#fbbf24)">
+        <span class="chart-bar-val">${cnt}</span>
+      </div></div>
+    </div>`).join(''):'<div style="text-align:center;color:#c4b5fd;padding:10px">কোনো ডেটা নেই</div>';
+}
+
+function refreshAdminAnalytics(){ renderAdminAnalytics(); toast('📊 Analytics আপডেট হয়েছে!'); }
+
+// ── BULK APPROVE ──────────────────────────
+async function bulkApproveAll(){
+  const pending=allP.filter(p=>p.status==='pending'||!p.status);
+  if(!pending.length){toast('কোনো pending নেই',true);return;}
+  if(!confirm(`${pending.length} জন প্লেয়ারকে একসাথে approve করবেন?`))return;
+  try{
+    const batch=db.batch();
+    pending.forEach(p=>batch.update(db.collection('players').doc(p.docId),{status:'approved'}));
+    await batch.commit();
+    pending.forEach(p=>p.status='approved');
+    renderList();renderAnalytics();renderAdminAnalytics();updateBulkCount();
+    launchConfetti();
+    toast(`✅ ${pending.length} জন approve করা হয়েছে!`);
+  }catch(e){toast('❌ ত্রুটি: '+e.message,true);}
+}
+
+function updateBulkCount(){
+  const cnt=allP.filter(p=>p.status==='pending'||!p.status).length;
+  const el=document.getElementById('bulkCount');
+  if(el)el.textContent=`${cnt} টি pending আছে`;
+}
+
+// ── WHATSAPP LIST ─────────────────────────
+function exportWhatsAppList(){
+  if(!allP.length){toast('কোনো ডেটা নেই',true);return;}
+  const approved=allP.filter(p=>p.status==='approved');
+  const pending=allP.filter(p=>p.status==='pending'||!p.status);
+  let txt=`🏆 স্বপ্ন সারথি ফুটবল টুর্নামেন্ট ২০২৬\n📊 মোট: ${allP.length} | ✅ অনুমোদিত: ${approved.length} | ⏳ পেন্ডিং: ${pending.length}\n\n✅ অনুমোদিত প্লেয়ার:\n`;
+  approved.forEach((p,i)=>txt+=`${i+1}. ${p.name} | ${p.village} | ${p.phone}\n`);
+  if(pending.length){txt+=`\n⏳ পেন্ডিং:\n`;pending.forEach((p,i)=>txt+=`${i+1}. ${p.name} | ${p.phone}\n`);}
+  navigator.clipboard.writeText(txt).then(()=>toast('✅ কপি হয়েছে!')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('✅ কপি হয়েছে!');
+  });
+}
+
+// ── DEADLINE & SEAT LIMIT ─────────────────
+function saveDeadlineSettings(){
+  localStorage.setItem('regDeadline',document.getElementById('admDeadline').value||'');
+  localStorage.setItem('seatLimit',document.getElementById('admSeatLimit').value||'0');
+  checkDeadlineAndSeat();toast('✅ সংরক্ষণ হয়েছে');
+}
+
+function checkDeadlineAndSeat(){
+  const deadline=localStorage.getItem('regDeadline');
+  const seatLimit=parseInt(localStorage.getItem('seatLimit')||'0');
+  const approved=allP?allP.filter(p=>p.status==='approved').length:0;
+  const dBanner=document.getElementById('deadlineBanner');
+  const sBanner=document.getElementById('seatBanner');
+  const subBtn=document.getElementById('subBtn');
+  let closed=false;
+  if(deadline){
+    const dl=new Date(deadline),now=new Date();
+    const admDl=document.getElementById('admDeadline');
+    if(admDl&&!admDl.value)admDl.value=deadline;
+    if(now>dl){
+      dBanner.style.display='block';dBanner.className='deadline-banner';
+      dBanner.textContent=`⏰ রেজিস্ট্রেশন বন্ধ হয়ে গেছে!`;
+      if(subBtn){subBtn.disabled=true;subBtn.textContent='⏰ রেজিস্ট্রেশন বন্ধ';}
+      closed=true;
+    } else {
+      const diff=dl-now,days=Math.floor(diff/86400000),hrs=Math.floor((diff%86400000)/3600000);
+      dBanner.style.display='block';dBanner.className='seat-banner';
+      dBanner.textContent=`⏰ রেজিস্ট্রেশন চলছে — বাকি ${days} দিন ${hrs} ঘণ্টা`;
+    }
+  } else dBanner.style.display='none';
+  if(seatLimit>0){
+    const admSl=document.getElementById('admSeatLimit');
+    if(admSl&&!admSl.value)admSl.value=seatLimit;
+    if(approved>=seatLimit){
+      sBanner.style.display='block';sBanner.className='deadline-banner';
+      sBanner.textContent=`🔴 সিট পূর্ণ! (${approved}/${seatLimit} জন)`;
+      if(!closed&&subBtn){subBtn.disabled=true;subBtn.textContent='🔴 সিট পূর্ণ';}
+    } else {
+      sBanner.style.display='block';sBanner.className='seat-banner';
+      sBanner.textContent=`🪑 ${seatLimit-approved} টি সিট বাকি (${approved}/${seatLimit})`;
+    }
+  } else sBanner.style.display='none';
+}
+
+// ── MATCH RESULTS & POINTS TABLE ──────────
+let matches=JSON.parse(localStorage.getItem('matches')||'[]');
+
+function saveMatch(){
+  const t1=document.getElementById('team1Name').value.trim();
+  const t2=document.getElementById('team2Name').value.trim();
+  const s1=parseInt(document.getElementById('score1').value||'0');
+  const s2=parseInt(document.getElementById('score2').value||'0');
+  const dt=document.getElementById('matchDate').value;
+  if(!t1||!t2){toast('⚠ দুটো দলের নাম দিন',true);return;}
+  matches.push({t1,t2,s1,s2,dt,id:Date.now()});
+  localStorage.setItem('matches',JSON.stringify(matches));
+  document.getElementById('team1Name').value='';document.getElementById('team2Name').value='';
+  document.getElementById('score1').value='';document.getElementById('score2').value='';
+  renderMatchResults();renderPointsTable();toast('⚽ ম্যাচ সংরক্ষণ হয়েছে!');
+}
+
+function renderMatchResults(){
+  const el=document.getElementById('matchResultsList');if(!el)return;
+  if(!matches.length){el.innerHTML='<div style="text-align:center;color:#c4b5fd;font-size:.8rem;padding:20px">কোনো ম্যাচ ফলাফল নেই</div>';return;}
+  el.innerHTML=[...matches].reverse().map(m=>`
+    <div class="match-card">
+      <div class="match-teams"><span>${m.t1}</span><span>${m.t2}</span></div>
+      <div class="match-score">${m.s1} — ${m.s2}</div>
+      <div style="text-align:center;font-size:.72rem;color:#c4b5fd">${m.dt||''}&nbsp;
+        ${m.s1>m.s2?'🏆 '+m.t1+' জিতেছে':m.s2>m.s1?'🏆 '+m.t2+' জিতেছে':'🤝 ড্র'}
+        <button onclick="deleteMatch(${m.id})" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.7rem;margin-left:8px">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function deleteMatch(id){
+  if(!confirm('এই ম্যাচ মুছবেন?'))return;
+  matches=matches.filter(m=>m.id!==id);
+  localStorage.setItem('matches',JSON.stringify(matches));
+  renderMatchResults();renderPointsTable();
+}
+
+function renderPointsTable(){
+  const el=document.getElementById('pointsBody');if(!el)return;
+  const teams={};
+  matches.forEach(m=>{
+    [m.t1,m.t2].forEach(t=>{if(!teams[t])teams[t]={played:0,won:0,drawn:0,lost:0,pts:0};});
+    teams[m.t1].played++;teams[m.t2].played++;
+    if(m.s1>m.s2){teams[m.t1].won++;teams[m.t1].pts+=3;teams[m.t2].lost++;}
+    else if(m.s2>m.s1){teams[m.t2].won++;teams[m.t2].pts+=3;teams[m.t1].lost++;}
+    else{teams[m.t1].drawn++;teams[m.t1].pts++;teams[m.t2].drawn++;teams[m.t2].pts++;}
+  });
+  const sorted=Object.entries(teams).sort((a,b)=>b[1].pts-a[1].pts);
+  el.innerHTML=sorted.length?sorted.map(([nm,s],i)=>`
+    <tr><td>${i+1}</td><td style="text-align:left;font-weight:700">${nm}</td>
+    <td>${s.played}</td><td style="color:#10b981">${s.won}</td>
+    <td style="color:#f59e0b">${s.drawn}</td><td style="color:#ef4444">${s.lost}</td>
+    <td style="font-weight:800;color:#7c3aed">${s.pts}</td></tr>`).join('')
+    :'<tr><td colspan="7" style="color:#c4b5fd;padding:20px">কোনো ম্যাচ নেই</td></tr>';
+}
+
+// ── TEAM COLLAGE ──────────────────────────
+async function generateCollage(){
+  const approved=allP.filter(p=>p.status==='approved');
+  if(!approved.length){toast('কোনো অ্যাপ্রুভড প্লেয়ার নেই',true);return;}
+  toast('🖼️ কোলাজ তৈরি হচ্ছে...');
+  const cols=Math.ceil(Math.sqrt(approved.length));
+  const rows=Math.ceil(approved.length/cols);
+  const sz=160,gap=8,pad=16;
+  const cvs=document.getElementById('collageCanvas');
+  cvs.width=cols*sz+(cols-1)*gap+pad*2;
+  cvs.height=rows*sz+(rows-1)*gap+pad*2+50;
+  const ctx=cvs.getContext('2d');
+  ctx.fillStyle='#1a0a2e';ctx.fillRect(0,0,cvs.width,cvs.height);
+  ctx.fillStyle='#fbbf24';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+  ctx.fillText('স্বপ্ন সারথি ফুটবল টুর্নামেন্ট ২০২৬',cvs.width/2,30);
+  const loadImg=url=>new Promise(res=>{
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>res(img);img.onerror=()=>res(null);img.src=url;
+  });
+  for(let i=0;i<approved.length;i++){
+    const p=approved[i];
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=pad+col*(sz+gap),y=pad+40+row*(sz+gap);
+    ctx.fillStyle='rgba(124,58,237,.3)';ctx.fillRect(x,y,sz,sz);
+    const img=await loadImg(p.photoURL||p.photo||'');
+    if(img){ctx.save();ctx.beginPath();ctx.rect(x,y,sz,sz);ctx.clip();ctx.drawImage(img,x,y,sz,sz);ctx.restore();}
+    ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(x,y+sz-24,sz,24);
+    ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+    ctx.fillText((p.name||'').substring(0,14),x+sz/2,y+sz-9);
+  }
+  document.getElementById('collageWrap').style.display='block';
+  toast('✅ কোলাজ তৈরি হয়েছে!');
+}
+
+function downloadCollage(){
+  const cvs=document.getElementById('collageCanvas');
+  const a=document.createElement('a');a.href=cvs.toDataURL('image/png');a.download='team_collage.png';a.click();
+}
+
+function shareCollageWA(){
+  const msg=encodeURIComponent('🏆 স্বপ্ন সারথি ফুটবল টুর্নামেন্ট ২০২৬ - টিম ফটো কোলাজ');
+  window.open('https://api.whatsapp.com/send?text='+msg,'_blank');
+  toast('WhatsApp খুলছে');
+}
+
+// ── INIT ADVANCED ─────────────────────────
+(function initAdvanced(){
+  renderMatchResults();renderPointsTable();
+  setTimeout(()=>{renderAnalytics();renderAdminAnalytics();updateBulkCount();checkDeadlineAndSeat();},2500);
+})();
+
+</script>
+</body>
+</html>
